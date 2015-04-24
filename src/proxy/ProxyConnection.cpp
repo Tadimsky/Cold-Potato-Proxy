@@ -40,7 +40,6 @@ void ProxyConnection::handleConnection() {
 	}
 
 	this->relayTraffic(outSock);
-
 }
 
 bool ProxyConnection::verifyVersion(bytes greeting) {
@@ -148,28 +147,25 @@ bool ProxyConnection::handleRequest(AddressDetails & request) {
 }
 
 std::shared_ptr<Socket> ProxyConnection::setupForwardConnection(const AddressDetails & request) {
-	auto outSock = std::make_shared<Socket>();
-
 	// Send reply.
+	cerr << "=== Connecting to Relay Sever ===" << endl;
 	RelayForwarder rf(request);
-	rf.connect();
 
 	// This is wrong - the address & port should be the local address of outSock on the server.
 	// Not sure why the client would need this, so I'm just going for 0s.
-	if (outSock->connect(request))
+
+	if (rf.connect())
 	{
 		using namespace Constants::Messages::SOCKS::Request;
-		cerr << "Connected!" << endl;
 		mSock->send(RequestGranted + Blank + Util::hexToString("01cb007101abab"));
 	}
 	else
 	{
 		using namespace Constants::Messages::SOCKS::Request;
-		cerr << "ProxyConnection failed." << endl;
 		mSock->send(HostUnreachable + Blank + Util::hexToString("01cb007101abab")); // Host unreachable.
 		return nullptr;
 	}
-	return outSock;
+	return rf.getSocket();
 }
 
 ProxyConnection::~ProxyConnection() {
