@@ -10,7 +10,7 @@
 using namespace std;
 
 bool Connection::readAddressInformation(AddressDetails &rq) {
-    return Util::readAddressInformation(mSock, rq);
+    //return Util::readAddressInformation(mSock, rq);
 
     bytes address;
 
@@ -93,7 +93,7 @@ void Connection::relayTraffic(std::shared_ptr<Socket> outSock) {
         }
         if (ret == 0)
         {
-//			cerr << "No data (timeout)" << endl;
+			cerr << "No data (timeout)" << endl;
             break;
         }
 
@@ -102,18 +102,18 @@ void Connection::relayTraffic(std::shared_ptr<Socket> outSock) {
             bytes data;
             if (!mSock->receive(data))
             {
-//				cerr << "Read error: " << strerror(errno) << endl;
+				cerr << "Read error: " << strerror(errno) << endl;
                 break;
             }
             if (data.empty())
             {
-//				cerr << "Read EOF." << endl;
+				cerr << "Read EOF." << endl;
                 break;
             }
 
             if (!outSock->send(data))
             {
-//				cerr << "Write error: " << strerror(errno) << endl;
+				cerr << "Write error: " << strerror(errno) << endl;
             }
         }
 
@@ -122,18 +122,18 @@ void Connection::relayTraffic(std::shared_ptr<Socket> outSock) {
             bytes data;
             if (!outSock->receive(data))
             {
-//				cerr << "Read error: " << strerror(errno) << endl;
+				cerr << "Read error: " << strerror(errno) << endl;
                 break;
             }
             if (data.empty())
             {
-//				cerr << "Read EOF." << endl;
+				cerr << "Read EOF." << endl;
                 break;
             }
 
             if (!mSock->send(data))
             {
-//				cerr << "Write error: " << strerror(errno) << endl;
+				cerr << "Write error: " << strerror(errno) << endl;
             }
         }
 
