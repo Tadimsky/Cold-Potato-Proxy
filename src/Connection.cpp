@@ -10,6 +10,8 @@
 using namespace std;
 
 bool Connection::readAddressInformation(AddressDetails &rq) {
+    return Util::readAddressInformation(mSock, rq);
+
     bytes address;
 
     AddressType addressType;
