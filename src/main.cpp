@@ -1,6 +1,5 @@
 #include "Socket.h"
 
-#include "Address.h"
 #include "Common.h"
 
 #include <cstring>
@@ -8,7 +7,11 @@
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
-#include "ProxyServer.h"
+#include <relay/RelayServer.h>
+#include <iomanip>
+#include "proxy/ProxyServer.h"
+#include "ConnectionData.h"
+#include "Util.h"
 
 using namespace std;
 
@@ -86,11 +89,30 @@ int main(int argc, char* argv[])
 	// -port <port>
 	Config cfg = ParseCommandLine(argc, argv);
 
+	AddressDetails t;
+	t.addressType = DOMAIN_ADDRESS;
+	t.address = "localhost";
+	t.port = 443;
+
+	stringstream ss;
+	ss << t;
+	string pp = ss.str();
+
 
 	int port = cfg.port;
-	ProxyServer proxy = ProxyServer(port);
 
-	proxy.Listen();
+	thread p([&] {
+		ProxyServer proxy = ProxyServer(port);
+		proxy.Listen();
+	});
+
+	thread r([&] {
+		RelayServer relay = RelayServer(1090);
+		relay.Listen();
+	});
+
+	p.join();
+	r.join();
 
 	return 0;
 }

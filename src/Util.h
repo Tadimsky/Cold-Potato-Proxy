@@ -9,6 +9,10 @@
 #define SRC_UTIL_H_
 
 #include <string>
+#include "ConnectionData.h"
+#include "Socket.h"
+#include <memory>
+
 
 namespace Util {
 
@@ -23,6 +27,10 @@ namespace Util {
 	 * into a string of hexidecimal values, e.g.: ")x05 0x12"
 	 */
 	std::string stringToHex(const std::string& str);
+
+	AddressDetails getBestRelay(const AddressDetails& destination);
+
+	bool readAddressInformation(std::shared_ptr<Socket> socket, AddressDetails &rq);
 
 } /* namespace Util */
 
