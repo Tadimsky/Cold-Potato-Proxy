@@ -26,6 +26,8 @@ public:
 
     RelayForwarder(const AddressDetails& relay, const AddressDetails& finalDestination);
 
+    std::shared_ptr<Socket> getSocket();
+
     bool connect();
 
 };

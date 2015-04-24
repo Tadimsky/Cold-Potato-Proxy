@@ -54,6 +54,12 @@ bool RelayForwarder::connect() {
         }
     }
 
+    AddressDetails ad;
+    if (!Util::readAddressInformation(mSock, ad)) {
+        cerr << "Could not read address information" << endl;
+        return false;
+    }
+
     return true;
 }
 
@@ -67,7 +73,11 @@ bool RelayForwarder::sendRequest(AddressDetails &dest) {
     stringstream address;
     address << dest;
     string data = address.str();
-    mSock->send(Util::hexToString("0101") + data);
+    mSock->send(Util::hexToString("010100") + data);
 
     return true;
+}
+
+std::shared_ptr<Socket> RelayForwarder::getSocket() {
+    return mSock;
 }
