@@ -12,6 +12,8 @@
 #include "Util.h"
 
 namespace Constants {
+	const std::string PlaceholderAddress = Util::hexToString("01cb007101abab");
+
 	namespace SOCKS {
 		namespace Version {
 			const int V5 = 0x05;
@@ -74,12 +76,16 @@ namespace Constants {
 		};
 		namespace Relay {
 			namespace Request {
-				const std::string RequestGranted = Util::hexToString("0100");
-				const std::string InvalidConnection = Util::hexToString("0102");
-				const std::string HostUnreachable = Util::hexToString("0104");
-				const std::string InvalidAddressType = Util::hexToString("0108");
-				const std::string Blank = Util::hexToString("00");
-			};
+				const std::string OpenConnection =  Util::hexToString("010100");
+
+				namespace Response {
+					const std::string RequestGranted = Util::hexToString("0100");
+					const std::string InvalidConnection = Util::hexToString("0102");
+					const std::string HostUnreachable = Util::hexToString("0104");
+					const std::string InvalidAddressType = Util::hexToString("0108");
+					const std::string Blank = Util::hexToString("00");
+				};
+			}
 		};
 	};
 };
