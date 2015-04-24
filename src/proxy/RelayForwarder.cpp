@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <Constants.h>
 #include "RelayForwarder.h"
 
 using namespace std;
@@ -21,7 +22,38 @@ bool RelayForwarder::connect() {
     if (!this->sendRequest(mFinalDestination)) {
         return false;
     }
-    // do other stuff
+    // read the response from the relay once it has connected
+
+    bytes message;
+    if (!mSock->receive(message, 3)) {
+        return false;
+    }
+
+    {
+        using namespace Constants::Relay;
+
+        if (message[0] != Version::V1) {
+            cerr << "Unknown relay version" << endl;
+            return false;
+        }
+
+        switch (message[1]) {
+            case Response::Granted:
+                // all is good
+                cerr << "Connected to destination through relay." << endl;
+                break;
+            case Response::HostUnreachable:
+                cerr << "Cannot connect to destination through relay." << endl;
+                return false;
+            case Response::InvalidAddressType:
+                cerr << "Relay does not support address type." << endl;
+                return false;
+            case Response::InvalidConnection:
+                cerr << "Relay does not support connection type." << endl;
+                return false;
+        }
+    }
+
     return true;
 }
 
