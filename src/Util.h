@@ -10,6 +10,8 @@
 
 #include <string>
 #include "ConnectionData.h"
+#include "Socket.h"
+#include <memory>
 
 
 namespace Util {
@@ -27,6 +29,8 @@ namespace Util {
 	std::string stringToHex(const std::string& str);
 
 	AddressDetails getBestRelay(const AddressDetails& destination);
+
+	bool readAddressInformation(std::shared_ptr<Socket> socket, AddressDetails &rq);
 
 } /* namespace Util */
 
