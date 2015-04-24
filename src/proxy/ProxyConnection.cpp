@@ -157,12 +157,12 @@ std::shared_ptr<Socket> ProxyConnection::setupForwardConnection(const AddressDet
 	if (rf.connect())
 	{
 		using namespace Constants::Messages::SOCKS::Request;
-		mSock->send(RequestGranted + Blank + Util::hexToString("01cb007101abab"));
+		mSock->send(RequestGranted + Blank + Constants::PlaceholderAddress);
 	}
 	else
 	{
 		using namespace Constants::Messages::SOCKS::Request;
-		mSock->send(HostUnreachable + Blank + Util::hexToString("01cb007101abab")); // Host unreachable.
+		mSock->send(HostUnreachable + Blank + Constants::PlaceholderAddress); // Host unreachable.
 		return nullptr;
 	}
 	return rf.getSocket();

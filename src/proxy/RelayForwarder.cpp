@@ -73,7 +73,7 @@ bool RelayForwarder::sendRequest(AddressDetails &dest) {
     stringstream address;
     address << dest;
     string data = address.str();
-    mSock->send(Util::hexToString("010100") + data);
+    mSock->send(Constants::Messages::Relay::Request::OpenConnection + data);
 
     return true;
 }
