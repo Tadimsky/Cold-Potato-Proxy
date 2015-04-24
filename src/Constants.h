@@ -32,8 +32,10 @@ namespace Constants {
 		namespace Command {
 			const int TCPConnection = 0x01;
 		};
-		namespace Error {
+		namespace Response {
+			const int Granted = 0x00;
 			const int InvalidConnection = 0x02;
+			const int HostUnreachable = 0x04;
 			const int InvalidAddressType = 0x08;
 		};
 	};
