@@ -28,7 +28,6 @@ struct Config
 	int relayPort;
 	std::string masterAddress;
 	int masterPort;
-
 };
 
 // Print an error message, usage, and then exit.

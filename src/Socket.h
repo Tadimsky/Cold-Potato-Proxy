@@ -44,7 +44,7 @@ public:
 	// Receive some data. Sets errno on failure and returns false.
 	// If size is 0, it waits for at least 1 byte, and then returns all available data up to 4096 bytes.
 	// If size is non-zero, it waits for /size/ bytes (up to 4096).
-	virtual bool receive(bytes& d, int size = 0);
+	virtual bool receive(bytes& d, ssize_t size = 0);
 
 	// Get the file descriptor (for polling, etc).
 	int descriptor();

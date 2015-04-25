@@ -136,7 +136,7 @@ bool Socket::send(const bytes& d)
 	return s != -1;
 }
 
-bool Socket::receive(bytes& d, int size)
+bool Socket::receive(bytes& d, ssize_t size)
 {
 	int flags = size > 0 ? MSG_WAITALL : 0;
 
@@ -151,7 +151,7 @@ bool Socket::receive(bytes& d, int size)
 		errno = EBADF;
 		return false;
 	}
-	int s = ::recv(fd, buffer, size, flags);
+	ssize_t s = ::recv(fd, buffer, size, flags);
 	if (s == -1)
 		return false;
 	d.append(buffer, s);

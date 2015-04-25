@@ -129,6 +129,8 @@ AddressDetails getBestRelay(const AddressDetails &destination) {
 		rq.address = address;
 		rq.addressType = addressType;
 		rq.port = port;
+
+		return true;
 	}
 
 } /* namespace Util */
