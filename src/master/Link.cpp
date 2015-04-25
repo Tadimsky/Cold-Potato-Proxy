@@ -11,19 +11,29 @@
 
 using namespace std;
 
-Link::Link(Node node, Node server, int latency, bool valid)
-: mServer(node), mNode(server), linkLatency(latency), valid(valid) {
+Link::Link(AddressDetails node, AddressDetails server, uint16_t latency, bool valid)
+: node(node), server(server), linkLatency(latency), valid(valid) {
 }
 
 Link::~Link(){
 	
 }
 
-std::string Link::getLinkID(){
+AddressDetails Link::getServer(){
+	return server;
+}
+
+std::string Link::getServerStr(){
 	std::string s;
 	s.clear();
-	s.append(mServer.ip);
+	s.append(server.address);
 	s.append("|");
-	s.append(mServer.port);
+	s.append(std::to_string(server.port));
 	return s;
 }
+
+
+const uint16_t Link::getLatency() const{
+	return linkLatency;
+}
+
