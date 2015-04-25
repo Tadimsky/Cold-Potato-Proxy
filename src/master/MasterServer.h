@@ -11,7 +11,6 @@
 
 #include "ListenServer.h"
 #include "Link.h"
-#include "Node.h"
 
 #include <unordered_map>
 #include <queue>
@@ -21,7 +20,7 @@ struct LinkComparator
 {
 	bool operator() (const Link &lhs, const Link &rhs) const
 	{
-		return lhs.linkLatency > rhs.linkLatency;
+		return lhs.getLatency() > rhs.getLatency();
 	}
 };
 
