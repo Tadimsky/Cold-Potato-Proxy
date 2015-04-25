@@ -17,17 +17,26 @@ using namespace std;
 
 struct Config
 {
-	Config() : port(1080) { }
-	int port;
+	Config() {
+		proxyPort = -1;
+		relayPort = -1;
+		masterAddress;
+		masterPort = -1;
+	}
+
+	int proxyPort;
+	int relayPort;
+	std::string masterAddress;
+	int masterPort;
+
 };
 
 // Print an error message, usage, and then exit.
 void Usage(string errorMessage)
 {
 	cerr << errorMessage << "\n"
-"Usage: oddsocks [-config <oddsocks.cfg (default)>] [-port <port, default 1080>]\n"
-"Command line options supersedes  options in the config file.\n"
-"Config file is simply the port.\n";
+"Usage: [-config <config.cfg (default)>] [-proxy port <port, default 1080>] [-relay port <port, default 1090>] [-master <ip>:<port]\n"
+"Command line options supersedes  options in the config file.\n";
 	exit(1);
 }
 
@@ -35,34 +44,88 @@ Config ReadConfigFromFile(string filename)
 {
 	Config cfg;
 	ifstream input(filename.c_str());
-	input >> cfg.port;
+
+	string key;
+	string temp;
+	while (true) {
+
+		input >> key;
+		if (input.eof() || key.empty())
+			break;
+
+		if (key == "-proxy") {
+			string type;
+			input >> type;
+			if (type == "port") {
+				input >> cfg.proxyPort;
+				if (cfg.proxyPort < 1 || cfg.proxyPort > 65535) {
+					Usage("Proxy Port must be between 1 and 65535. You specified " + cfg.proxyPort);
+				}
+			}
+		}
+		else if (key == "-relay") {
+			string type;
+			input >> type;
+			if (type == "port") {
+				input >> cfg.relayPort;
+				if (cfg.relayPort < 1 || cfg.relayPort > 65535) {
+					Usage("Relay Port must be between 1 and 65535. You specified " + cfg.relayPort);
+				}
+			}
+		}
+		else if (key == "-master") {
+			string value;
+			input >> value;
+			cfg.masterAddress = value.substr(0, value.find(':'));
+			cfg.masterPort = StoI(value.substr(value.find(':') + 1), -1);
+			if (cfg.masterPort < 1 || cfg.masterPort > 65535) {
+				Usage("Master Port must be between 1 and 65535. You specified " + cfg.masterPort);
+			}
+		}
+	}
+
 	return cfg;
 }
 
 Config ParseCommandLine(int argc, char* argv[])
 {
 	Config cfg;
-	cfg.port = -1;
 
-	string configFile = "oddsocks.cfg";
+	string configFile = "config.cfg";
 
-	if (argc % 2 != 1)
-	{
-		Usage("Expected an even number of arguments.");
-	}
-	for (int i = 0; i < argc/2; ++i)
-	{
-		string key = argv[i*2+1];
-		string value = argv[i*2+2];
-		if (key == "-config")
-		{
-			configFile = value;
+	int i = 1;
+	while (i < argc - 1) {
+		string key = argv[i++];
+
+		if (key == "-config") {
+			configFile = argv[i++];
 		}
-		else if (key == "-port")
-		{
-			cfg.port = StoI(value, -1);
-			if (cfg.port < 1 || cfg.port > 65535)
-				Usage("Port must be between 1 and 65535. Read value " + value + " understood as " + ItoS(cfg.port));
+		else if (key == "-proxy") {
+			string type = argv[i++];
+			if (type == "port") {
+				cfg.proxyPort = StoI(argv[i++], -1);
+				if (cfg.proxyPort < 1 || cfg.proxyPort > 65535) {
+					Usage("Proxy Port must be between 1 and 65535. You specified " + cfg.proxyPort);
+				}
+			}
+		}
+		else if (key == "-relay") {
+			string type = argv[i++];
+			if (type == "port") {
+				cfg.relayPort = StoI(argv[i++], -1);
+				if (cfg.relayPort < 1 || cfg.relayPort > 65535) {
+					Usage("Relay Port must be between 1 and 65535. You specified " + cfg.relayPort);
+				}
+			}
+		}
+		else if (key == "-master") {
+			string value = argv[i++];
+			// parse ip
+			cfg.masterAddress = value.substr(0, value.find(':'));
+			cfg.masterPort = StoI(value.substr(value.find(':') + 1), -1);
+			if (cfg.masterPort < 1 || cfg.masterPort > 65535) {
+				Usage("Master Port must be between 1 and 65535. You specified " + cfg.masterPort);
+			}
 		}
 		else
 		{
@@ -70,13 +133,18 @@ Config ParseCommandLine(int argc, char* argv[])
 		}
 	}
 
-	// Try to read config file. Slightly dubious logic here!
-	// I should make this more clear.
+
 	Config cfgFromFile = ReadConfigFromFile(configFile);
-	if (cfg.port == -1)
-		cfg.port = cfgFromFile.port;
-	if (cfg.port == -1)
-		cfg.port = 1080;
+	// Load in defaults
+	if (cfg.relayPort == -1)
+		cfg.relayPort = cfgFromFile.relayPort;
+	if (cfg.relayPort == -1)
+		cfg.relayPort = 1090;
+
+	if (cfg.proxyPort == -1)
+		cfg.proxyPort = cfgFromFile.proxyPort ;
+	if (cfg.proxyPort == -1)
+		cfg.proxyPort = 1080;
 
 	return cfg;
 }
@@ -85,8 +153,9 @@ int main(int argc, char* argv[])
 {
 	// Command line options will be:
 	// -config <file>
-	// -password <pw>
-	// -port <port>
+	// -proxy port <port>
+	// -relay port <port>
+	// -master <address>:<port>
 	Config cfg = ParseCommandLine(argc, argv);
 
 	AddressDetails t;
@@ -98,16 +167,13 @@ int main(int argc, char* argv[])
 	ss << t;
 	string pp = ss.str();
 
-
-	int port = cfg.port;
-
 	thread p([&] {
-		ProxyServer proxy = ProxyServer(port);
+		ProxyServer proxy = ProxyServer(cfg.proxyPort);
 		proxy.Listen();
 	});
 
 	thread r([&] {
-		RelayServer relay = RelayServer(1090);
+		RelayServer relay = RelayServer(cfg.relayPort);
 		relay.Listen();
 	});
 
