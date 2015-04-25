@@ -12,7 +12,7 @@
 #include "unistd.h"
 #include <thread>
 #include <memory.h>
-#include <Connection.h>
+#include "Connection.h"
 #include "../ConnectionData.h"
 
 class ProxyConnection : public Connection {
