@@ -14,8 +14,8 @@
 #include "Node.h"
 
 #include <unordered_map>
-#include <set>
 #include <queue>
+#include <shared_mutex>
 
 struct LinkComparator
 {
@@ -25,17 +25,19 @@ struct LinkComparator
 	}
 };
 
+
+typedef struct std::unordered_map<std::string,std::priority_queue<Link, std::vector<Link>, LinkComparator>> HashMap;
 class MasterServer : public ListenServer{
 	
 private:
-	std::unordered_map<std::string,std::priority_queue<Link, std::vector<Link>, LinkComparator>> link_map;
-	std::vector<Node> nodes;
 
 	
 public:
 	MasterServer(int port) : ListenServer(port) {};
 	
 	virtual void processConnection(ConnectionData *data) override;
+	HashMap link_map;
+	std::shared_timed_mutex map_lock;
 };
 
 #endif /* defined(__Cold_Potato_Proxy__MasterServer__) */

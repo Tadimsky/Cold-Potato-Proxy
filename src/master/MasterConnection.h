@@ -12,11 +12,13 @@
 #include "Socket.h"
 #include "Connection.h"
 #include "../ConnectionData.h"
+#include "MasterServer.h"
 
 
 class MasterConnection : public  Connection {
 private:
-	
+	HashMap *link_map;
+	std::shared_timed_mutex *map_lock;
 	/**
 	 * Verifies that the version that the client is requesting is allowed by our proxy server.
 	 */
@@ -28,7 +30,7 @@ private:
 	bool handleRequest(AddressDetails & request);
 	
 public:
-	MasterConnection(ConnectionData* connection);
+	MasterConnection(ConnectionData* connection, HashMap *link_map, std::shared_timed_mutex *map_lock);
 	void handleConnection();
 	virtual ~MasterConnection();
 };

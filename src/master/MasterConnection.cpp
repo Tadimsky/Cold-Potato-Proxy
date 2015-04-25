@@ -13,7 +13,8 @@
 
 using namespace std;
 
-MasterConnection::MasterConnection(ConnectionData* connection) : Connection(connection) {
+
+MasterConnection::MasterConnection(ConnectionData* connection, HashMap *link_map, std::shared_timed_mutex *map_lock) : Connection(connection),link_map(link_map), map_lock(map_lock) {
 }
 
 void MasterConnection::handleConnection() {
@@ -24,7 +25,7 @@ void MasterConnection::handleConnection() {
 //	AddressDetails request;
 //	if (!this->handleRequest(request)) {
 //		return;
-//	}
+//
 }
 
 bool MasterConnection::verifyVersion(char version) {

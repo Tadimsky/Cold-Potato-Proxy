@@ -21,6 +21,6 @@ void MasterServer::processConnection(ConnectionData *data) {
 		return;
 	}
 	
-	MasterConnection connection(data);
+	MasterConnection connection(data, &link_map, &map_lock);
 	connection.handleConnection();
 }
