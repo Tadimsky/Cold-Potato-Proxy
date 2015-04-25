@@ -54,7 +54,7 @@ namespace Constants {
 		namespace Command {
 			const int Join = 0x01;
 			const int Connect = 0x02;
-			const int Update = 0x03;
+			const int Find = 0x03;
 			const int Response = 0x04;
 		};
 		namespace Response {

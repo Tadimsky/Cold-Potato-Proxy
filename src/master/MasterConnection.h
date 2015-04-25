@@ -31,6 +31,7 @@ private:
 	void nodeJoin();
 	void nodeConnect();
 	void nodeUpdate();
+	void sendError();
 	
 public:
 	MasterConnection(ConnectionData* connection, HashMap *link_map, std::shared_timed_mutex *map_lock);

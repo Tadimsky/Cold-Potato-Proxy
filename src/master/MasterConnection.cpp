@@ -68,42 +68,15 @@ void MasterConnection::nodeJoin(){
 	} else {
 		(*link_map)[link.getServerStr()].push(link);
 	}
+	
+	char temp;
+	temp = Constants::Server::Version::V1;
 	response.clear();
-	response += Constants::Server::Version::V1;
-	response += Constants::Server::Response::Recorded;
-	//mSock->send(<#const bytes &d#>)
-//
-//	vector<string> tokenList = Util::split(request, '|');
-//	if(tokenList.size()<3){
-//		cerr<<"Join with insufficient parameters!\n";
-//	}
-//	
-//	Node node =  Node::Node(tokenList[1], tokenList[2]);
-//	int loops = (int)tokenList.size()/3;
-//	if(loops<=0){
-//		nodes.push_back(node);
-//		return;
-//	}
-//	
-//	for(int i=1; i<loops; i++){
-//		Node server = Node::Node(tokenList[i*3], tokenList[i*3+1]);
-//		int latency = std::stoi( tokenList[i*3+2]);
-//		Link link = Link::Link(node, server, latency, true);
-//		if(link_map.count(link.getLinkID())<=0){
-//			std::priority_queue<Link, std::vector<Link>, LinkComparator> links;
-//			links.push(link);
-//			link_map[link.getLinkID()] = links;
-//			nodes.push_back(node);
-//		} else {
-//			link_map[link.getLinkID()].push(link);
-//		}
-//	}
-//	
-//	
-//	response.append(std::to_string(Constants::PMessages::OK));
-//	sock->send(response);
-//	
-}
+	response +=(temp);
+	temp = Constants::Server::Response::Recorded;
+	response +=(temp);
+	mSock->send(response);
+	}
 
 void MasterConnection::nodeConnect(){
 	std::string response;
@@ -204,6 +177,7 @@ bool MasterConnection::handleRequest(AddressDetails & request) {
 			break;
 	}	return this->readAddressInformation(request);
 }
+
 
 
 
