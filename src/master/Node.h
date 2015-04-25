@@ -8,7 +8,17 @@
 
 #ifndef __Cold_Potato_Proxy__Node__
 #define __Cold_Potato_Proxy__Node__
+#include <string>
 
-#include <stdio.h>
+
+class Node {
+	
+public:
+	Node(std::string ip, std::string port);
+	std::string ip;
+	std::string port;
+};
+
+
 
 #endif /* defined(__Cold_Potato_Proxy__Node__) */

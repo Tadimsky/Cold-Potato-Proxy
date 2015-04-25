@@ -7,3 +7,11 @@
 //
 
 #include "Node.h"
+
+using namespace std;
+
+Node::Node(std::string ip, std::string port)
+{
+	Node::ip = ip;
+	Node::port = port;
+}
