@@ -7,3 +7,20 @@
 //
 
 #include "MasterServer.h"
+#include "MasterConnection.h"
+
+
+using namespace std;
+
+void MasterServer::processConnection(ConnectionData *data) {
+	
+	if (!data)
+	{
+		// Invalid data.
+		cerr << "NULL thread data." << endl;
+		return;
+	}
+	
+	MasterConnection connection(data);
+	connection.handleConnection();
+}
