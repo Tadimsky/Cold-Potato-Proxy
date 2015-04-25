@@ -10,8 +10,28 @@
 #define __Cold_Potato_Proxy__MasterServer__
 
 #include "ListenServer.h"
+#include "Link.h"
+#include "Node.h"
+
+#include <unordered_map>
+#include <set>
+#include <queue>
+
+struct LinkComparator
+{
+	bool operator() (const Link &lhs, const Link &rhs) const
+	{
+		return lhs.linkLatency > rhs.linkLatency;
+	}
+};
 
 class MasterServer : public ListenServer{
+	
+private:
+	std::unordered_map<std::string,std::priority_queue<Link, std::vector<Link>, LinkComparator>> link_map;
+	std::vector<Node> nodes;
+
+	
 public:
 	MasterServer(int port) : ListenServer(port) {};
 	
