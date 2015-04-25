@@ -6,8 +6,29 @@
 #define COLD_POTATO_PROXY_MASTERCONTROLLER_H
 
 
-class MasterController {
+#include <bits/shared_ptr.h>
+#include "Socket.h"
+#include "Util.h"
 
+class MasterController {
+private:
+    std::shared_ptr<Socket> mSock;
+
+    AddressDetails mMasterInformation;
+    AddressDetails mRelayInformation;
+
+    bool sendJoinRequest();
+
+
+
+public:
+    MasterController(const AddressDetails& relayInformation);
+
+    bool connect(const AddressDetails& master);
+
+    bool getBestRelay(const AddressDetails& destination);
+
+    bool updateConnection(const AddressDetails& destination, int latency);
 };
 
 
