@@ -18,21 +18,21 @@ MasterConnection::MasterConnection(ConnectionData* connection, HashMap *link_map
 }
 
 void MasterConnection::handleConnection() {
-//	int sock = mConnectionData->socket;
-//	
-//	mSock = std::make_unique<Socket>(sock);
-//	
-//	AddressDetails request;
-//	if (!this->handleRequest(request)) {
-//		return;
-//
+	int sock = mConnectionData->socket;
+	
+	mSock = std::make_unique<Socket>(sock);
+	
+	AddressDetails request;
+	if (!this->handleRequest(request)) {
+		return;
+	}
 }
 
 bool MasterConnection::verifyVersion(char version) {
-//	if (version != Constants::Relay::Version::V1) {
-//		cerr << "Invalid relay version." << endl;
-//		return false;
-//	}
+	if (version != Constants::Relay::Version::V1) {
+		cerr << "Invalid relay version." << endl;
+		return false;
+	}
 	return true;
 }
 

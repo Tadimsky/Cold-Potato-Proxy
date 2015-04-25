@@ -46,6 +46,25 @@ namespace Constants {
 			const int InvalidAddressType = 0x08;
 		};
 	};
+	
+	namespace Server {
+		namespace Version {
+			const int V1 = 0x01;
+		};
+		namespace Command {
+			const int Join = 0x01;
+			const int Connect = 0x02;
+			const int Update = 0x03;
+			const int Response = 0x04;
+		};
+		namespace Response {
+			const int Granted = 0x00;
+			const int InvalidConnection = 0x02;
+			const int HostUnreachable = 0x04;
+			const int InvalidAddressType = 0x08;
+		};
+	};
+	
 	namespace IP {
 		namespace Type {
 			const int IPV4 = 0x01;
