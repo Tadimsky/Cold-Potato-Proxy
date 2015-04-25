@@ -37,37 +37,143 @@ bool MasterConnection::verifyVersion(char version) {
 }
 
 
-bool MasterConnection::handleRequest(AddressDetails & request) {
-	bytes header;
-	
-	if (!mSock->receive(header, 3))
-	{
-		return false;
-	}
-	
-	if (header.size() != 3)
-	{
-		return false;
-	}
-	
-	if (!this->verifyVersion(header[0])) {
-		return false;
-	}
-	
-	// We only support TCP CONNECT, so fail other commands.
-	if (header[1] != Constants::Relay::Command::TCPConnection)
-	{
-		cerr << "Unsupported command: " << hex << header[1] << endl;
-		// use this namespace for easier to read messages.
-		using namespace Constants::Messages::Relay::Request::Response;
-		// TODO: Process error messages better. + anything else??
-		mSock->send(InvalidConnection +  Blank);
-		
-		return false;
-	}
-	
-	return this->readAddressInformation(request);
+void MasterConnection::nodeJoin(){
+	std::string response;
+	response.clear();
+//	
+//	vector<string> tokenList = Util::split(request, '|');
+//	if(tokenList.size()<3){
+//		cerr<<"Join with insufficient parameters!\n";
+//	}
+//	
+//	Node node =  Node::Node(tokenList[1], tokenList[2]);
+//	int loops = (int)tokenList.size()/3;
+//	if(loops<=0){
+//		nodes.push_back(node);
+//		return;
+//	}
+//	
+//	for(int i=1; i<loops; i++){
+//		Node server = Node::Node(tokenList[i*3], tokenList[i*3+1]);
+//		int latency = std::stoi( tokenList[i*3+2]);
+//		Link link = Link::Link(node, server, latency, true);
+//		if(link_map.count(link.getLinkID())<=0){
+//			std::priority_queue<Link, std::vector<Link>, LinkComparator> links;
+//			links.push(link);
+//			link_map[link.getLinkID()] = links;
+//			nodes.push_back(node);
+//		} else {
+//			link_map[link.getLinkID()].push(link);
+//		}
+//	}
+//	
+//	
+//	response.append(std::to_string(Constants::PMessages::OK));
+//	sock->send(response);
+//	
 }
+
+void MasterConnection::nodeConnect(){
+	std::string response;
+	response.clear();
+	
+//	vector<string> tokenList = Util::split(request, '|');
+//	if(tokenList.size()!=5){
+//		cerr<<"Connect wrong number of parameters!\n";
+//	}
+//	
+//	Node node =  Node::Node(tokenList[1], tokenList[2]);
+//	
+//	
+//	Node server = Node::Node(tokenList[3], tokenList[4]);
+//	
+//	Link link = Link::Link(node, server, 0, true);
+//	if(link_map.count(link.getLinkID())<=0){
+//		
+//		response.append(std::to_string(Constants::PMessages::NOT_FOUND));
+//		
+//	} else {
+//		//Found!
+//		link = link_map[link.getLinkID()].top();
+//		response.append(std::to_string(Constants::PMessages::RESPONSE));
+//		response.append("|");
+//		response.append(link.getLinkID());
+//	}
+//	
+//	sock->send(response);
+}
+
+void MasterConnection::nodeUpdate(){
+//	
+//	std::string response;
+//	response.clear();
+//	
+//	vector<string> tokenList = Util::split(request, '|');
+//	if(tokenList.size()<3){
+//		cerr<<"Join with insufficient parameters!\n";
+//	}
+//	
+//	Node node =  Node::Node(tokenList[1], tokenList[2]);
+//	int loops = (int)tokenList.size()/3;
+//	if(loops<=0){
+//		nodes.push_back(node);
+//		return;
+//	}
+//	
+//	for(int i=1; i<loops; i++){
+//		Node server = Node::Node(tokenList[i*3], tokenList[i*3+1]);
+//		int latency = std::stoi( tokenList[i*3+2]);
+//		Link link = Link::Link(node, server, latency, true);
+//		if(link_map.count(link.getLinkID())<=0){
+//			std::priority_queue<Link, std::vector<Link>, LinkComparator> links;
+//			links.push(link);
+//			link_map[link.getLinkID()] = links;
+//			nodes.push_back(node);
+//		} else {
+//			link_map[link.getLinkID()].push(link);
+//		}
+//	}
+//	
+//	
+//	response.append(std::to_string(Constants::PMessages::OK));
+//	sock->send(response);
+}
+
+bool MasterConnection::handleRequest(AddressDetails & request) {
+	bytes version, method;
+	uint8_t methodNum = 0;
+	
+	if (!mSock->receive(version, 1) && version.size() != 1)
+		return false;
+	
+	if (!this->verifyVersion(version[0])) {
+		return false;
+	}
+	
+	if (!mSock->receive(method, 1) && method.size() != 1)
+		return false;
+
+	//hopefully same endinaness due to TCP correction.
+	methodNum = (uint8_t) method[0];
+	
+	switch (methodNum) {
+		case Constants::Server::Command::Join:
+			nodeJoin();
+			break;
+		case Constants::Server::Command::Connect:
+			nodeConnect();
+			break;
+		case Constants::Server::Command::Update
+			nodeUpdate();
+			break;
+			
+		default:
+			cerr <<	"Invalid node request\n!";
+			break;
+	}	return this->readAddressInformation(request);
+}
+
+
 
 MasterConnection::~MasterConnection() {
 	//delete mConnectionData;

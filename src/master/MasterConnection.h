@@ -28,6 +28,9 @@ private:
 	 * Handles a client's connection request.
 	 */
 	bool handleRequest(AddressDetails & request);
+	void nodeJoin();
+	void nodeConnect();
+	void nodeUpdate();
 	
 public:
 	MasterConnection(ConnectionData* connection, HashMap *link_map, std::shared_timed_mutex *map_lock);
