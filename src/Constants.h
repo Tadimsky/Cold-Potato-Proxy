@@ -14,6 +14,11 @@
 namespace Constants {
 	const std::string PlaceholderAddress = Util::hexToString("01cb007101abab");
 
+	namespace Config{
+		const bool masterServer = false;
+		const bool node = true;
+	}
+	
 	namespace SOCKS {
 		namespace Version {
 			const int V5 = 0x05;

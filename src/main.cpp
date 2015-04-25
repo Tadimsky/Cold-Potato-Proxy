@@ -12,13 +12,15 @@
 #include "proxy/ProxyServer.h"
 #include "ConnectionData.h"
 #include "Util.h"
+#include "Constants.h"
 
 using namespace std;
 
 struct Config
 {
-	Config() : port(1080) { }
+	Config() : port(1080), nodeType(Constants::Config::node){ }
 	int port;
+	bool nodeType;
 };
 
 // Print an error message, usage, and then exit.
@@ -64,6 +66,13 @@ Config ParseCommandLine(int argc, char* argv[])
 			if (cfg.port < 1 || cfg.port > 65535)
 				Usage("Port must be between 1 and 65535. Read value " + value + " understood as " + ItoS(cfg.port));
 		}
+		else if (key == "-type"){
+			if(value == "master"){
+				cfg.nodeType = Constants::Config::masterServer;
+			} else {
+				cfg.nodeType = Constants::Config::node;
+			}
+		}
 		else
 		{
 			Usage("Unknown option: " + key);
@@ -84,6 +93,7 @@ Config ParseCommandLine(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
 	// Command line options will be:
+	// -type <master-node, node>
 	// -config <file>
 	// -password <pw>
 	// -port <port>
@@ -101,6 +111,7 @@ int main(int argc, char* argv[])
 
 	int port = cfg.port;
 
+	if(cfg.nodeType == Constants::Config::node){
 	thread p([&] {
 		ProxyServer proxy = ProxyServer(port);
 		proxy.Listen();
@@ -113,6 +124,13 @@ int main(int argc, char* argv[])
 
 	p.join();
 	r.join();
-
+	} else {
+		thread r([&] {
+			//RelayServer relay = RelayServer(1090);
+			//relay.Listen();
+		});
+	}
+	
+	
 	return 0;
 }
