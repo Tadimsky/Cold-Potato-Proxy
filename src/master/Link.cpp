@@ -7,3 +7,23 @@
 //
 
 #include "Link.h"
+#include <string>
+
+using namespace std;
+
+Link::Link(Node node, Node server, int latency, bool valid)
+: mServer(node), mNode(server), linkLatency(latency), valid(valid) {
+}
+
+Link::~Link(){
+	
+}
+
+std::string Link::getLinkID(){
+	std::string s;
+	s.clear();
+	s.append(mServer.ip);
+	s.append("|");
+	s.append(mServer.port);
+	return s;
+}
