@@ -38,9 +38,41 @@ bool MasterConnection::verifyVersion(char version) {
 
 
 void MasterConnection::nodeJoin(){
-	std::string response;
+	AddressDetails node, server;
+	bytes latencyStr, response;
+	uint16_t latency=UINT16_MAX;
+	
+	if (!readAddressInformation(node)) {
+		cerr << "Could not read address information" << endl;
+		return;
+	}
+	if (!readAddressInformation(server)) {
+		cerr << "Could not read joining node server address information" << endl;
+		return;
+	}
+	
+	if (!mSock->receive(latencyStr, 2) && latencyStr.size() != 2)
+		return;
+	
+	// horrible latency decoding. same as port...
+	unsigned char h = (unsigned char)latencyStr[0];
+	unsigned char l = (unsigned char)latencyStr[1];
+	latency = (h << 8) + l;
+
+	Link link = Link::Link(node, server, latency, true);
+
+	if(link_map->count(link.getServerStr())<=0){
+		std::priority_queue<Link, std::vector<Link>, LinkComparator> links;
+		links.push(link);
+		(*link_map)[link.getServerStr()] = links;
+	} else {
+		(*link_map)[link.getServerStr()].push(link);
+	}
 	response.clear();
-//	
+	response += Constants::Server::Version::V1;
+	response += Constants::Server::Response::Recorded;
+	//mSock->send(<#const bytes &d#>)
+//
 //	vector<string> tokenList = Util::split(request, '|');
 //	if(tokenList.size()<3){
 //		cerr<<"Join with insufficient parameters!\n";
@@ -163,7 +195,7 @@ bool MasterConnection::handleRequest(AddressDetails & request) {
 		case Constants::Server::Command::Connect:
 			nodeConnect();
 			break;
-		case Constants::Server::Command::Update
+		case Constants::Server::Command::Update:
 			nodeUpdate();
 			break;
 			

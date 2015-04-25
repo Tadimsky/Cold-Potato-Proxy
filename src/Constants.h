@@ -62,6 +62,7 @@ namespace Constants {
 			const int InvalidConnection = 0x02;
 			const int HostUnreachable = 0x04;
 			const int InvalidAddressType = 0x08;
+			const int Recorded = 0x0F;
 		};
 	};
 	
