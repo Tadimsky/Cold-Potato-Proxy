@@ -24,7 +24,7 @@ AddressDetails Link::getServer(){
 }
 
 AddressDetails Link::getNode(){
-	return server;
+	return node;
 }
 
 
