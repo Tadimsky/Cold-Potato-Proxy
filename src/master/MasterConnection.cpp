@@ -90,7 +90,7 @@ void MasterConnection::nodeConnect(){
 	unsigned char l = (unsigned char)latencyStr[1];
 	latency = (h << 8) + l;
 	
-	Link *link = new Link::Link(node, server, latency, true);
+	Link *link = new Link(node, server, latency, true);
 	
 	map_lock->lock();
 	if(link_map->count(link->getServer())<=0){

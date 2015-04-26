@@ -49,9 +49,7 @@ typedef struct std::unordered_map<AddressDetails,std::priority_queue<Link*, std:
 typedef struct std::unordered_map<AddressDetails,std::vector<Link*>, KeyHasher> NodeHashMap;
 
 class MasterServer : public ListenServer{
-	
 private:
-
 	
 public:
 	MasterServer(int port) : ListenServer(port) {};
