@@ -34,6 +34,8 @@ public:
 
     static std::shared_ptr<MasterController> getInstance();
 
+    bool isConnected();
+
 };
 
 

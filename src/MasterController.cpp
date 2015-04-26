@@ -63,3 +63,7 @@ std::shared_ptr<MasterController> MasterController::getInstance() {
 bool MasterController::updateConnection(const AddressDetails &destination, int latency) {
     return false;
 }
+
+bool MasterController::isConnected() {
+    return mSock->isConnected();
+}

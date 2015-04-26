@@ -39,6 +39,8 @@ public:
 	virtual bool connect6(const bytes& ip, uint16_t port);
 	virtual bool connect(const std::string& domain, uint16_t port);
 
+	bool isConnected();
+
 	virtual bool connect(const AddressDetails& a);
 
 	// Send some data. Sets errno on failure and returns false.

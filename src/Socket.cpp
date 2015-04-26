@@ -253,3 +253,7 @@ std::string Socket::getLocalIPAddress() {
 	}
 	return std::string(addressBuffer);
 }
+
+bool Socket::isConnected() {
+	return this->fd != -1;
+}
