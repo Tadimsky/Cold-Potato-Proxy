@@ -32,6 +32,9 @@ MasterController::MasterController() {
 }
 
 bool MasterController::sendJoinRequest() {
+    if (!this->isConnected()) {
+        return false;
+    }
     // send the master controller the welcome message
 
     // need to get my information
@@ -64,8 +67,13 @@ bool MasterController::sendJoinRequest() {
 }
 
 AddressDetails MasterController::getBestRelay(const AddressDetails &destination) {
+    if (!this->isConnected()) {
+        return mRelayInformation;
+    }
+
+    AddressDetails destCopy = destination;
     std::stringstream s;
-    s << destination;
+    s << destCopy;
     std::string msg(s.str());
 
     using namespace Constants::Messages;
@@ -109,13 +117,17 @@ bool MasterController::isConnected() {
 }
 
 bool MasterController::notifyConnection(const AddressDetails &destination) {
-
+    if (!this->isConnected()) {
+        return false;
+    }
     std::stringstream s;
     s << mRelayInformation;
     std::string relay(s.str());
 
+    AddressDetails dest(destination);
     s.clear();
-    s << destination;
+    s << destgst
+            ;
     std::string dst(s.str());
 
     using namespace Constants::Messages;

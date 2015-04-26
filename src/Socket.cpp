@@ -215,6 +215,9 @@ bool Socket::connect(const AddressDetails &a) {
 
 			break;
 	}
+	if (!connected) {
+		fd = -1;
+	}
 
 	return connected;
 }
