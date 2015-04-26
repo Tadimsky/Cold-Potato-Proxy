@@ -2,8 +2,11 @@
 // Created by jonno on 4/25/15.
 //
 
+#include <sstream>
 #include "MasterController.h"
 #include "Constants.h"
+
+using namespace std;
 
 std::shared_ptr<MasterController> MasterController::mInstance;
 
@@ -33,23 +36,60 @@ bool MasterController::sendJoinRequest() {
 
     // need to get my information
 
+    std::stringstream s;
+    s << mRelayInformation;
+    std::string msg(s.str());
+
     using namespace Constants::Messages;
-    if (!mSock->send(Master::Version + Master::Request::Join /* + address information */)) {
+    if (!mSock->send(Master::Version + Master::Request::Join + msg)) {
         return false;
     }
 
     bytes response;
-    if (!mSock->receive(response, 1)) {
+    if (!mSock->receive(response, 2)) {
+        return false;
+    }
+    if (response[0] != 0x01) {
         return false;
     }
 
-    // verify the information
-    // based on standard
+    if (response[1] != 0x0F) {
+        cerr << "Did not record update on master" << endl;
+        return false;
+    }
+
+    // connected!
 
     return true;
 }
 
 AddressDetails MasterController::getBestRelay(const AddressDetails &destination) {
+    std::stringstream s;
+    s << destination;
+    std::string msg(s.str());
+
+    using namespace Constants::Messages;
+    if (!mSock->send(Master::Version + Master::Request::FindRelay + msg)) {
+        return mRelayInformation;
+    }
+
+    bytes response;
+    if (!mSock->receive(response, 2)) {
+        return mRelayInformation;
+    }
+    if (response[0] != 0x01) {
+        return mRelayInformation;
+    }
+
+    if (response[1] != 0x0F) {
+        return mRelayInformation;
+    }
+
+    AddressDetails value;
+    if (!Util::readAddressInformation(mSock, value)) {
+        return mRelayInformation;
+    }
+    return value;
 }
 
 std::shared_ptr<MasterController> MasterController::getInstance() {
