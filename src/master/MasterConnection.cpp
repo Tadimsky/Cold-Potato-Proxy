@@ -158,7 +158,7 @@ void MasterConnection::nodeFind(){
 	response +=(temp);
 	
 	stringstream address;
-	address << server;
+	address << node;
 	response.append(address.str());
 	
 	mSock->send(response);
