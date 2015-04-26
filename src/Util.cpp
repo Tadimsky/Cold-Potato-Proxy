@@ -133,5 +133,13 @@ AddressDetails getBestRelay(const AddressDetails &destination) {
 		return true;
 	}
 
+	std::string PresentationToNetwork(std::string ip) {
+		char ipo[4];
+		inet_pton(AF_INET, ip.c_str(), (void*)ipo);
+
+		std::string s;
+		s.append(ipo, 4);
+		return s;
+	}
 } /* namespace Util */
 

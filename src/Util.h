@@ -32,6 +32,8 @@ namespace Util {
 
 	bool readAddressInformation(std::shared_ptr<Socket> socket, AddressDetails &rq);
 
+	std::string PresentationToNetwork(std::string ip);
+
 } /* namespace Util */
 
 #endif /* SRC_UTIL_H_ */
