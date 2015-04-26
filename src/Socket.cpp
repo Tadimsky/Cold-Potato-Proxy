@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <ifaddrs.h>
+#include <string.h>
 #include "Util.h"
 
 Socket::Socket()
@@ -236,13 +237,15 @@ std::string Socket::getLocalIPAddress() {
 			tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
 			addressBuffer = (char*)malloc(INET_ADDRSTRLEN * sizeof(char));
 			inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-			printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
+			// need to get non loopback adapter
+			if (strcmp(ifa->ifa_name, "lo") != 0) {
+				break;
+			}
 		} else if (ifa->ifa_addr->sa_family == AF_INET6) { // check it is IP6
 			// is a valid IP6 Address
 			tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
 			addressBuffer = (char*)malloc(INET6_ADDRSTRLEN * sizeof(char));
 			inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
-			printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
 		}
 	}
 	if (ifAddrStruct!=NULL) {

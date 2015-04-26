@@ -166,6 +166,8 @@ int main(int argc, char* argv[])
 	ss << t;
 	string pp = ss.str();
 
+	cout << Socket::getLocalIPAddress() << endl;
+
 	thread p([&] {
 		ProxyServer proxy = ProxyServer(cfg.proxyPort);
 		proxy.Listen();
