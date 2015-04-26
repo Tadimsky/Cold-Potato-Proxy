@@ -173,6 +173,16 @@ Config ParseCommandLine(int argc, char* argv[])
 	if (cfg.proxyPort == -1)
 		cfg.proxyPort = 1080;
 
+	if (cfg.masterPort == -1)
+		cfg.masterPort = cfgFromFile.masterPort ;
+	if (cfg.masterPort == -1)
+		cfg.masterPort = 1090;
+
+	if (cfg.masterAddress.empty())
+		cfg.masterAddress = cfgFromFile.masterAddress ;
+	if (cfg.masterAddress.empty())
+		cfg.masterAddress = "127.0.0.1";
+
 	return cfg;
 }
 

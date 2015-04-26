@@ -25,6 +25,7 @@ bool MasterController::connect(AddressDetails relay, AddressDetails master) {
 }
 
 MasterController::MasterController() {
+    mSock = std::make_shared<Socket>();
 }
 
 bool MasterController::sendJoinRequest() {
