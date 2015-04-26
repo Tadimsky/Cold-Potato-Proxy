@@ -126,8 +126,7 @@ bool MasterController::notifyConnection(const AddressDetails &destination) {
 
     AddressDetails dest(destination);
     s.clear();
-    s << destgst
-            ;
+    s << dest;
     std::string dst(s.str());
 
     using namespace Constants::Messages;
