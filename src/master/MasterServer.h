@@ -13,7 +13,8 @@
 #include "Link.h"
 
 #include <unordered_map>
-#include <queue>
+#include <set>
+#include <vector>
 #include <mutex>
 
 struct LinkComparator
@@ -45,7 +46,7 @@ struct KeyHasher
 
 
 
-typedef struct std::unordered_map<AddressDetails,std::priority_queue<Link*, std::vector<Link*>, LinkComparator>, KeyHasher> LinkHashMap;
+typedef struct std::unordered_map<AddressDetails,std::set<Link*, LinkComparator>, KeyHasher> LinkHashMap;
 typedef struct std::unordered_map<AddressDetails,std::vector<Link*>, KeyHasher> NodeHashMap;
 
 class MasterServer : public ListenServer{

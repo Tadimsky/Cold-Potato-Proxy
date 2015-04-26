@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <master/MasterServer.h>
+#include "master/MasterServer.h"
 #include "relay/RelayServer.h"
 #include "proxy/ProxyServer.h"
 #include "ConnectionData.h"
