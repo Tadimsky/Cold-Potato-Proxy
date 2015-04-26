@@ -123,6 +123,7 @@ bool MasterController::isConnected() {
 }
 
 bool MasterController::notifyConnection(const AddressDetails &destination) {
+    cerr << "Notifying new connection." << endl;
     if (!this->isConnected()) {
         return false;
     }

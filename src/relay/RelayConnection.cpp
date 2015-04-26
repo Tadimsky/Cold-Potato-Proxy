@@ -10,6 +10,9 @@
 #include "Constants.h"
 
 #include <iostream>
+#include <master/MasterServer.h>
+#include <MasterController.h>
+#include <future>
 
 using namespace std;
 
@@ -94,6 +97,9 @@ std::shared_ptr<Socket> RelayConnection::setupForwardConnection(const AddressDet
 		mSock->send(Response::HostUnreachable + Response::Blank + Constants::PlaceholderAddress);
 		return nullptr;
 	}
+	// here we want to notify the master server that we have connection to the destination
+	std::future<bool> notify = std::async(std::launch::async, &MasterController::notifyConnection, MasterController::getInstance(), request);
+	//notify.get();
 	return outSock;
 }
 
