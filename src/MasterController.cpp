@@ -52,11 +52,11 @@ bool MasterController::sendJoinRequest() {
     if (!mSock->receive(response, 2)) {
         return false;
     }
-    if (response[0] != 0x01) {
+    if (response[0] != Constants::Server::Version::V1) {
         return false;
     }
 
-    if (response[1] != 0x0F) {
+    if (response[1] != Constants::Server::Response::Recorded) {
         cerr << "Did not record update on master" << endl;
         return false;
     }
@@ -85,11 +85,11 @@ AddressDetails MasterController::getBestRelay(const AddressDetails &destination)
     if (!mSock->receive(response, 2)) {
         return mRelayInformation;
     }
-    if (response[0] != 0x01) {
+    if (response[0] != Constants::Server::Version::V1) {
         return mRelayInformation;
     }
 
-    if (response[1] != 0x0F) {
+    if (response[1] != Constants::Server::Response::Result) {
         return mRelayInformation;
     }
 
@@ -138,11 +138,11 @@ bool MasterController::notifyConnection(const AddressDetails &destination) {
     if (!mSock->receive(response, 2)) {
         return false;
     }
-    if (response[0] != 0x01) {
+    if (response[0] != Constants::Server::Version::V1) {
         return false;
     }
 
-    if (response[1] != 0x0F) {
+    if (response[1] != Constants::Server::Response::Recorded) {
         cerr << "Did not record connection on master" << endl;
         return false;
     }
