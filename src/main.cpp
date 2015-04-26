@@ -236,6 +236,7 @@ int main(int argc, char* argv[])
 			MasterServer master(1337);
 			master.Listen();
 		});
+		r.join();
 	}
 
 	return 0;
