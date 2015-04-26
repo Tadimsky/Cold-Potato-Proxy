@@ -7,6 +7,7 @@
 
 #include "Util.h"
 #include "Constants.h"
+#include "MasterController.h"
 
 #include <stdexcept>
 
@@ -58,12 +59,15 @@ namespace Util {
 	
 	
 	AddressDetails getBestRelay(const AddressDetails &destination) {
+		return MasterController::getInstance()->getBestRelay(destination);
+		/*
 		AddressDetails response;
 		response.address = "localhost";
 		response.port = 1090;
 		response.addressType = DOMAIN_ADDRESS;
 		
 		return response;
+		 */
 	}
 	
 	bool readAddressInformation(std::shared_ptr<Socket> socket, AddressDetails &rq) {
