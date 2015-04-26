@@ -29,6 +29,18 @@ public:
     uint16_t port;
 
     friend std::ostream &operator<<( std::ostream  &output, AddressDetails &address );
+	
+	bool operator==(const AddressDetails &other) const
+	{ return (addressType == other.addressType
+			  && address == other.address
+			  && port == other.port);
+	}
+	
+	bool operator==(const AddressDetails *other) const
+	{ return (addressType == other->addressType
+			  && address == other->address
+			  && port == other->port);
+	}
 };
 
 

@@ -23,6 +23,11 @@ AddressDetails Link::getServer(){
 	return server;
 }
 
+AddressDetails Link::getNode(){
+	return server;
+}
+
+
 std::string Link::getServerStr(){
 	std::string s;
 	s.clear();

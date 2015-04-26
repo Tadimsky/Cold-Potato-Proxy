@@ -22,6 +22,7 @@ public:
 	Link(AddressDetails node, AddressDetails server, uint16_t latency, bool valid);
 	virtual ~Link();
 	AddressDetails getServer();
+	AddressDetails getNode();
 	const uint16_t getLatency() const;
 	std::string getServerStr();
 	bool valid = false;

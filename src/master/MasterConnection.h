@@ -17,8 +17,11 @@
 
 class MasterConnection : public  Connection {
 private:
-	HashMap *link_map;
-	std::shared_timed_mutex *map_lock;
+	LinkHashMap *link_map;
+	NodeHashMap *node_map;
+
+	std::mutex *map_lock;
+	
 	/**
 	 * Verifies that the version that the client is requesting is allowed by our proxy server.
 	 */
@@ -34,7 +37,7 @@ private:
 	void sendError();
 	
 public:
-	MasterConnection(ConnectionData* connection, HashMap *link_map, std::shared_timed_mutex *map_lock);
+	MasterConnection(ConnectionData* connection, LinkHashMap *link_map, NodeHashMap *node_map, std::mutex *map_lock);
 	void handleConnection();
 	virtual ~MasterConnection();
 };

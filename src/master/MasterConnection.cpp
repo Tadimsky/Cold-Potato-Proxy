@@ -10,11 +10,12 @@
 #include "Constants.h"
 #include <iostream>
 #include <sstream>
+#include <mutex>
 
 using namespace std;
 
 
-MasterConnection::MasterConnection(ConnectionData* connection, HashMap *link_map, std::shared_timed_mutex *map_lock) : Connection(connection),link_map(link_map), map_lock(map_lock) {
+MasterConnection::MasterConnection(ConnectionData* connection, LinkHashMap *link_map, NodeHashMap *node_map, std::mutex *map_lock) : Connection(connection),link_map(link_map), node_map(node_map), map_lock(map_lock) {
 }
 
 void MasterConnection::handleConnection() {
@@ -38,35 +39,19 @@ bool MasterConnection::verifyVersion(char version) {
 
 
 void MasterConnection::nodeJoin(){
-	AddressDetails node, server;
+	AddressDetails node;
 	bytes latencyStr, response;
-	uint16_t latency=UINT16_MAX;
 	
 	if (!readAddressInformation(node)) {
 		cerr << "Could not read address information" << endl;
-		return;
-	}
-	if (!readAddressInformation(server)) {
-		cerr << "Could not read joining node server address information" << endl;
+		sendError();
 		return;
 	}
 	
-	if (!mSock->receive(latencyStr, 2) && latencyStr.size() != 2)
-		return;
-	
-	// horrible latency decoding. same as port...
-	unsigned char h = (unsigned char)latencyStr[0];
-	unsigned char l = (unsigned char)latencyStr[1];
-	latency = (h << 8) + l;
 
-	Link link = Link::Link(node, server, latency, true);
-
-	if(link_map->count(link.getServerStr())<=0){
-		std::priority_queue<Link, std::vector<Link>, LinkComparator> links;
-		links.push(link);
-		(*link_map)[link.getServerStr()] = links;
-	} else {
-		(*link_map)[link.getServerStr()].push(link);
+	if(node_map->count(node)<=0){
+		std::vector<Link*> nodeLink;
+		(*node_map)[node] = nodeLink;
 	}
 	
 	char temp;
@@ -76,36 +61,61 @@ void MasterConnection::nodeJoin(){
 	temp = Constants::Server::Response::Recorded;
 	response +=(temp);
 	mSock->send(response);
-	}
+}
 
 void MasterConnection::nodeConnect(){
-	std::string response;
-	response.clear();
+	AddressDetails node, server;
+	bytes latencyStr, response;
+	uint16_t latency=UINT16_MAX;
 	
-//	vector<string> tokenList = Util::split(request, '|');
-//	if(tokenList.size()!=5){
-//		cerr<<"Connect wrong number of parameters!\n";
-//	}
-//	
-//	Node node =  Node::Node(tokenList[1], tokenList[2]);
-//	
-//	
-//	Node server = Node::Node(tokenList[3], tokenList[4]);
-//	
-//	Link link = Link::Link(node, server, 0, true);
-//	if(link_map.count(link.getLinkID())<=0){
-//		
-//		response.append(std::to_string(Constants::PMessages::NOT_FOUND));
-//		
-//	} else {
-//		//Found!
-//		link = link_map[link.getLinkID()].top();
-//		response.append(std::to_string(Constants::PMessages::RESPONSE));
-//		response.append("|");
-//		response.append(link.getLinkID());
-//	}
-//	
-//	sock->send(response);
+	if (!readAddressInformation(node)) {
+		cerr << "Could not read address information" << endl;
+		sendError();
+		return;
+	}
+	if (!readAddressInformation(server)) {
+		cerr << "Could not read joining node server address information" << endl;
+		sendError();
+		return;
+	}
+	
+	if (!mSock->receive(latencyStr, 2) && latencyStr.size() != 2){
+		sendError();
+		return;
+	}
+	
+	// horrible latency decoding. same as port...
+	unsigned char h = (unsigned char)latencyStr[0];
+	unsigned char l = (unsigned char)latencyStr[1];
+	latency = (h << 8) + l;
+	
+	Link *link = new Link::Link(node, server, latency, true);
+	
+	map_lock->lock();
+	if(link_map->count(link->getServer())<=0){
+		std::priority_queue<Link*, std::vector<Link*>, LinkComparator> links;
+		links.push(link);
+		(*link_map)[link->getServer()] = links;
+	} else {
+		(*link_map)[link->getServer()].push(link);
+	}
+	
+	if(node_map->count(link->getNode())<=0){
+		std::vector<Link*> nodeLink;
+		nodeLink.push_back(link);
+		(*node_map)[link->getNode()] = nodeLink;
+	} else {
+		(*node_map)[link->getNode()].push_back(link);
+	}
+	map_lock->unlock();
+	
+	char temp;
+	temp = Constants::Server::Version::V1;
+	response.clear();
+	response +=(temp);
+	temp = Constants::Server::Response::Recorded;
+	response +=(temp);
+	mSock->send(response);
 }
 
 void MasterConnection::nodeUpdate(){
@@ -168,10 +178,10 @@ bool MasterConnection::handleRequest(AddressDetails & request) {
 		case Constants::Server::Command::Connect:
 			nodeConnect();
 			break;
-		case Constants::Server::Command::Update:
-			nodeUpdate();
-			break;
-			
+//		case Constants::Server::Command::Delete:
+//			nodeUpdate();
+//			break;
+//			
 		default:
 			cerr <<	"Invalid node request\n!";
 			break;
@@ -179,7 +189,17 @@ bool MasterConnection::handleRequest(AddressDetails & request) {
 }
 
 
+void MasterConnection::sendError() {
+	std::string response;
+	response.clear();
 
+	char temp = Constants::Server::Version::V1;
+	response.clear();
+	response +=(temp);
+	temp = Constants::Server::Response::Error;
+	response +=(temp);
+	mSock->send(response);
+}
 
 MasterConnection::~MasterConnection() {
 	//delete mConnectionData;

@@ -20,7 +20,7 @@ void MasterServer::processConnection(ConnectionData *data) {
 		cerr << "NULL thread data." << endl;
 		return;
 	}
-	
-	MasterConnection connection(data, &link_map, &map_lock);
+		
+	MasterConnection connection(data, &link_map, &node_map, &map_lock);
 	connection.handleConnection();
 }
