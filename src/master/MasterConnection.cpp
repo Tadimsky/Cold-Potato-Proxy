@@ -146,6 +146,7 @@ void MasterConnection::nodeFind(){
 	map_lock->unlock();
 	
 	if(error){
+		cerr << "Could not find best relay server." << endl;
 		sendError();
 		return;
 	}
@@ -162,7 +163,6 @@ void MasterConnection::nodeFind(){
 	response.append(address.str());
 	
 	mSock->send(response);
-
 	cerr << "Returned best relay server." << endl;
 }
 

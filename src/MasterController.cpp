@@ -51,7 +51,6 @@ bool MasterController::sendJoinRequest() {
 
     using namespace Constants::Messages;
     string f = Master::Version + Master::Request::Join + msg;
-    cerr << Util::stringToHex(f);
     if (!mSock->send(f)) {
         return false;
     }
@@ -97,21 +96,25 @@ AddressDetails MasterController::getBestRelay(const AddressDetails &destination)
 
     bytes response;
     if (!mSock->receive(response, 2)) {
+        cerr << "Did not receive relay information from server." << endl;
         socketMutex.unlock();
         return mRelayInformation;
     }
     if (response[0] != Constants::Server::Version::V1) {
+        cerr << "Master Server version is incorrect." << endl;
         socketMutex.unlock();
         return mRelayInformation;
     }
 
     if (response[1] != Constants::Server::Response::Result) {
+        cerr << "Did not receive result response for relay." << endl;
         socketMutex.unlock();
         return mRelayInformation;
     }
 
     AddressDetails value;
     if (!Util::readAddressInformation(mSock, value)) {
+        cerr << "Could not receive realy address information from server." << endl;
         socketMutex.unlock();
         return mRelayInformation;
     }
@@ -154,7 +157,6 @@ bool MasterController::notifyConnection(const AddressDetails &destination) {
 
     using namespace Constants::Messages;
     bytes msg = Master::Version + Master::Request::ConnectServer + relay + dst + Util::hexToString("0000");
-    cerr << msg << endl;
     if (!mSock->send(msg)) {
         cerr << "Could not send message to master server." << endl;
         socketMutex.unlock();
