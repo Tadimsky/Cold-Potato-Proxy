@@ -62,6 +62,7 @@ void MasterConnection::nodeJoin(){
 	temp = Constants::Server::Response::Recorded;
 	response +=(temp);
 	mSock->send(response);
+	cerr << "New relay node joined." << endl;
 }
 
 void MasterConnection::nodeConnect(){
@@ -117,6 +118,8 @@ void MasterConnection::nodeConnect(){
 	temp = Constants::Server::Response::Recorded;
 	response +=(temp);
 	mSock->send(response);
+
+	cerr << "Relay opened new connection." << endl;
 }
 
 void MasterConnection::nodeFind(){
@@ -159,6 +162,8 @@ void MasterConnection::nodeFind(){
 	response.append(address.str());
 	
 	mSock->send(response);
+
+	cerr << "Returned best relay server." << endl;
 }
 
 void MasterConnection::nodeDelete(){

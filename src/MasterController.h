@@ -7,6 +7,7 @@
 
 
 #include <memory>
+#include <mutex>
 #include "Socket.h"
 #include "Util.h"
 
@@ -19,9 +20,12 @@ private:
 
     bool sendJoinRequest();
 
-    MasterController();
+
+
+    std::mutex socketMutex;
 public:
     // needs to be private
+    MasterController();
 
     static std::shared_ptr<MasterController> mInstance;
 
