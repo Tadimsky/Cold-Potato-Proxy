@@ -59,7 +59,8 @@ namespace Util {
 	
 	
 	AddressDetails getBestRelay(const AddressDetails &destination) {
-		return MasterController::getInstance()->getBestRelay(destination);
+		AddressDetails details = MasterController::getInstance()->getBestRelay(destination);
+		return details;
 		/*
 		AddressDetails response;
 		response.address = "localhost";

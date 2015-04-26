@@ -155,41 +155,43 @@ void MasterConnection::nodeFind(){
 	response.append(address.str());
 	
 	mSock->send(response);
-
 }
 
 bool MasterConnection::handleRequest(AddressDetails & request) {
 	bytes version, method;
 	uint8_t methodNum = 0;
-	
-	if (!mSock->receive(version, 1) && version.size() != 1)
-		return false;
-	
-	if (!this->verifyVersion(version[0])) {
-		return false;
-	}
-	
-	if (!mSock->receive(method, 1) && method.size() != 1)
-		return false;
 
-	//hopefully same endinaness due to TCP correction.
-	methodNum = (uint8_t) method[0];
-	
-	switch (methodNum) {
-		case Constants::Server::Command::Join:
-			nodeJoin();
-			break;
-		case Constants::Server::Command::Connect:
-			nodeConnect();
-			break;
-		case Constants::Server::Command::Find:
-			nodeFind();
-			break;
-			
-		default:
-			cerr <<	"Invalid node request\n!";
-			break;
-	}	return this->readAddressInformation(request);
+	while (true) {
+
+		if (!mSock->receive(version, 1) || version.size() != 1)
+			return false;
+
+		if (!this->verifyVersion(version[0])) {
+			return false;
+		}
+
+		if (!mSock->receive(method, 1) && method.size() != 1)
+			return false;
+
+		//hopefully same endinaness due to TCP correction.
+		methodNum = (uint8_t) method[0];
+
+		switch (methodNum) {
+			case Constants::Server::Command::Join:
+				nodeJoin();
+				break;
+			case Constants::Server::Command::Connect:
+				nodeConnect();
+				break;
+			case Constants::Server::Command::Find:
+				nodeFind();
+				break;
+
+			default:
+				cerr << "Invalid node request\n!";
+				break;
+		}
+	}
 }
 
 
