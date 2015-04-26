@@ -28,6 +28,8 @@ public:
 	// Create a new TCP socket.
 	Socket();
 
+	static std::string getLocalIPAddress();
+
 	// Construct this from a socket returned by accept().
 	explicit Socket(int sock);
 	virtual ~Socket();
