@@ -8,11 +8,11 @@
 #ifndef SRC_RELAYCONNECTION_H_
 #define SRC_RELAYCONNECTION_H_
 
-#include "Socket.h"
+#include "../Socket.h"
 #include "unistd.h"
 #include <thread>
 #include <memory.h>
-#include "Connection.h"
+#include "../Connection.h"
 #include "../ConnectionData.h"
 
 class RelayConnection : public  Connection {

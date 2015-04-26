@@ -6,7 +6,7 @@
 #define COLD_POTATO_PROXY_RELAY_H
 
 
-#include "ListenServer.h"
+#include "../ListenServer.h"
 
 class RelayServer : public ListenServer{
 public:

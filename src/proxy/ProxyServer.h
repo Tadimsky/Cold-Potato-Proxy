@@ -9,7 +9,7 @@
 #define SRC_PROXYSERVER_H_
 
 #include "ProxyConnection.h"
-#include "ListenServer.h"
+#include "../ListenServer.h"
 
 
 class ProxyServer : public ListenServer {

@@ -6,10 +6,10 @@
 #define COLD_POTATO_PROXY_RELAYFORWARDER_H
 
 
-#include "ConnectionData.h"
+#include "../ConnectionData.h"
 #include "../Socket.h"
 #include <thread>
-#include <Util.h>
+#include "../Util.h"
 
 class RelayForwarder {
 private:

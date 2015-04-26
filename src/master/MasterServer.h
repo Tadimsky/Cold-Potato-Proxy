@@ -9,7 +9,7 @@
 #ifndef __Cold_Potato_Proxy__MasterServer__
 #define __Cold_Potato_Proxy__MasterServer__
 
-#include "ListenServer.h"
+#include "../ListenServer.h"
 #include "Link.h"
 
 #include <unordered_map>

@@ -7,7 +7,7 @@
 //
 
 #include "MasterConnection.h"
-#include "Constants.h"
+#include "../Constants.h"
 #include <iostream>
 #include <sstream>
 #include <mutex>
@@ -31,7 +31,7 @@ void MasterConnection::handleConnection() {
 
 bool MasterConnection::verifyVersion(char version) {
 	if (version != Constants::Relay::Version::V1) {
-		cerr << "Invalid master version provided." << endl;
+		cerr << "Invalid master version provided: " << Util::stringToHex(std::to_string(version)) << endl;
 		return false;
 	}
 	return true;

@@ -6,10 +6,9 @@
  */
 
 #include "ProxyServer.h"
-#include "Socket.h"
+#include "../Socket.h"
 #include <thread>
 #include "string.h"
-#include "Common.h"
 #include "unistd.h"
 #include <iostream>
 

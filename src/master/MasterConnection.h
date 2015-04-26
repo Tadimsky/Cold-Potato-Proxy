@@ -9,8 +9,8 @@
 #ifndef __Cold_Potato_Proxy__MasterConnection__
 #define __Cold_Potato_Proxy__MasterConnection__
 
-#include "Socket.h"
-#include "Connection.h"
+#include "../Socket.h"
+#include "../Connection.h"
 #include "../ConnectionData.h"
 #include "MasterServer.h"
 

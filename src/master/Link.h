@@ -10,7 +10,7 @@
 #define __Cold_Potato_Proxy__Link__
 
 #include <string>
-#include "ConnectionData.h"
+#include "../ConnectionData.h"
 
 class Link {
 private:

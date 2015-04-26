@@ -7,11 +7,10 @@
 
 #include <sstream>
 #include "RelayConnection.h"
-#include "Constants.h"
+#include "../Constants.h"
 
 #include <iostream>
-#include <master/MasterServer.h>
-#include <MasterController.h>
+#include "../MasterController.h"
 #include <future>
 
 using namespace std;

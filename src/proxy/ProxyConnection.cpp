@@ -7,7 +7,7 @@
 
 #include <sstream>
 #include "ProxyConnection.h"
-#include "Constants.h"
+#include "../Constants.h"
 #include "RelayForwarder.h"
 
 #include <iostream>
