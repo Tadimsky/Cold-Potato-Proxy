@@ -7,12 +7,13 @@
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
-#include <relay/RelayServer.h>
 #include <iomanip>
+#include "relay/RelayServer.h"
 #include "proxy/ProxyServer.h"
 #include "ConnectionData.h"
 #include "Util.h"
 #include "MasterController.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -23,12 +24,14 @@ struct Config
 		relayPort = -1;
 		masterAddress;
 		masterPort = -1;
+		isMaster = false;
 	}
 
 	int proxyPort;
 	int relayPort;
 	std::string masterAddress;
 	int masterPort;
+	bool isMaster;
 };
 
 void initMasterController(Config& config) {
@@ -157,6 +160,14 @@ Config ParseCommandLine(int argc, char* argv[])
 				Usage("Master Port must be between 1 and 65535. You specified " + cfg.masterPort);
 			}
 		}
+		else if (key == "-type"){
+			string value = argv[i++];
+			if(value == "master"){
+				cfg.isMaster = true;
+			} else {
+				cfg.isMaster = false;
+			}
+		}
 		else
 		{
 			Usage("Unknown option: " + key);
@@ -192,20 +203,12 @@ Config ParseCommandLine(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
 	// Command line options will be:
+	// -type <master-node, node>
 	// -config <file>
 	// -proxy port <port>
 	// -relay port <port>
 	// -master <address>:<port>
 	Config cfg = ParseCommandLine(argc, argv);
-
-	AddressDetails t;
-	t.addressType = DOMAIN_ADDRESS;
-	t.address = "localhost";
-	t.port = 443;
-
-	stringstream ss;
-	ss << t;
-	string pp = ss.str();
 
 	string ip;
 	string data;
@@ -213,19 +216,26 @@ int main(int argc, char* argv[])
 
 	cout << "Local IP Address: " << ip << endl;
 
-	thread p([&] {
-		ProxyServer proxy = ProxyServer(cfg.proxyPort);
-		proxy.Listen();
-	});
+	if(!cfg.isMaster){
+		thread p([&] {
+			ProxyServer proxy = ProxyServer(cfg.proxyPort);
+			proxy.Listen();
+		});
 
-	thread r([&] {
-		RelayServer relay = RelayServer(cfg.relayPort);
-		relay.Listen();
-	});
-	initMasterController(cfg);
+		thread r([&] {
+			RelayServer relay = RelayServer(cfg.relayPort);
+			relay.Listen();
+		});
+		initMasterController(cfg);
 
-	p.join();
-	r.join();
+		p.join();
+		r.join();
+	} else {
+		thread r([&] {
+			//RelayServer relay = RelayServer(1090);
+			//relay.Listen();
+		});
+	}
 
 	return 0;
 }

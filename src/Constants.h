@@ -14,6 +14,11 @@
 namespace Constants {
 	const std::string PlaceholderAddress = Util::hexToString("01cb007101abab");
 
+	namespace Config{
+		const bool masterServer = false;
+		const bool node = true;
+	}
+	
 	namespace SOCKS {
 		namespace Version {
 			const int V5 = 0x05;
@@ -41,6 +46,28 @@ namespace Constants {
 			const int InvalidAddressType = 0x08;
 		};
 	};
+	
+	namespace Server {
+		namespace Version {
+			const int V1 = 0x01;
+		};
+		namespace Command {
+			const int Join = 0x01;
+			const int Connect = 0x02;
+			const int Find = 0x03;
+			const int Response = 0x04;
+		};
+		namespace Response {
+			const int Granted = 0x00;
+			const int InvalidConnection = 0x02;
+			const int HostUnreachable = 0x04;
+			const int InvalidAddressType = 0x08;
+			const int Recorded = 0x0F;
+			const int Error = 0x10;
+			const int Result = 0x20;
+		};
+	};
+	
 	namespace IP {
 		namespace Type {
 			const int IPV4 = 0x01;
