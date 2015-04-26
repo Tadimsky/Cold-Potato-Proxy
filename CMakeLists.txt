@@ -19,6 +19,9 @@ set(SOURCE_FILES
     src/ConnectionData.cpp
     src/main.cpp
     src/relay/RelayConnection.cpp
+    src/master/Link.cpp
+    src/master/MasterConnection.cpp
+    src/master/MasterServer.cpp
     src/relay/RelayConnection.h
     src/Sha1.cpp
     src/Sha1.h
