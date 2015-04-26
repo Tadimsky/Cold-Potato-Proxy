@@ -94,11 +94,11 @@ void MasterConnection::nodeConnect(){
 	
 	map_lock->lock();
 	if(link_map->count(link->getServer())<=0){
-		std::priority_queue<Link*, std::vector<Link*>, LinkComparator> links;
-		links.push(link);
+		std::set<Link*, LinkComparator> links;
+		links.insert(link);
 		(*link_map)[link->getServer()] = links;
 	} else {
-		(*link_map)[link->getServer()].push(link);
+		(*link_map)[link->getServer()].insert(link);
 	}
 	
 	if(node_map->count(link->getNode())<=0){
@@ -133,7 +133,10 @@ void MasterConnection::nodeFind(){
 	
 	map_lock->lock();
 	if(link_map->count(server)>0){
-		node = (*link_map)[server].top()->getNode();
+		if((*link_map)[server].size()>0)
+			node = (*(*link_map)[server].begin())->getNode();
+		else
+			error = true;
 	} else {
 		error = true; //faster, prevent clogs
 	}
@@ -141,6 +144,7 @@ void MasterConnection::nodeFind(){
 	
 	if(error){
 		sendError();
+		return;
 	}
 	
 	char temp;
@@ -155,8 +159,50 @@ void MasterConnection::nodeFind(){
 	response.append(address.str());
 	
 	mSock->send(response);
-
 }
+
+void MasterConnection::nodeDelete(){
+	AddressDetails node;
+	bytes latencyStr, response;
+	std::vector<Link*> nodeLinks;
+	
+	if (!readAddressInformation(node)) {
+		cerr << "Could not read address information" << endl;
+		sendError();
+		return;
+	}
+	
+	map_lock->lock();
+	if(node_map->count(node)<=0){
+		nodeLinks = (*node_map)[node];
+	} else {
+		map_lock->unlock();
+		sendError();
+		return;
+	}
+	
+	for(int i=0; i<nodeLinks.size(); i++){
+		Link *l = nodeLinks[i];
+		if(link_map->count(l->getServer())<=0){
+			(*link_map)[l->getServer()].erase(l);
+		} else {
+			map_lock->unlock();
+			sendError();
+			return;
+		}
+	}
+	node_map->erase(node);
+	map_lock->unlock();
+	
+	
+	char temp;
+	temp = Constants::Server::Version::V1;
+	response.clear();
+	response +=(temp);
+	temp = Constants::Server::Response::Recorded;
+	response +=(temp);
+}
+
 
 bool MasterConnection::handleRequest(AddressDetails & request) {
 	bytes version, method;
