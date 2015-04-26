@@ -14,6 +14,8 @@ bool MasterController::connect(AddressDetails relay, AddressDetails master) {
     mRelayInformation = relay;
     mMasterInformation = master;
 
+    cerr << "Connecting to Master Server." << endl;
+
     if (!mSock->connect(mMasterInformation)) {
         return false;
     }
@@ -22,7 +24,7 @@ bool MasterController::connect(AddressDetails relay, AddressDetails master) {
     if (!this->sendJoinRequest()) {
         return false;
     }
-
+    cerr << "Connected to Master Server." << endl;
     // we have now connected to the master server
     return true;
 }
@@ -44,15 +46,19 @@ bool MasterController::sendJoinRequest() {
     std::string msg(s.str());
 
     using namespace Constants::Messages;
-    if (!mSock->send(Master::Version + Master::Request::Join + msg)) {
+    string f = Master::Version + Master::Request::Join + msg;
+    cerr << Util::stringToHex(f);
+    if (!mSock->send(f)) {
         return false;
     }
 
     bytes response;
     if (!mSock->receive(response, 2)) {
+        cerr << "Did not receive master reply." << endl;
         return false;
     }
     if (response[0] != Constants::Server::Version::V1) {
+        cerr << "Unsupported Master Server Version" << endl;
         return false;
     }
 
@@ -60,13 +66,11 @@ bool MasterController::sendJoinRequest() {
         cerr << "Did not record update on master" << endl;
         return false;
     }
-
-    // connected!
-
     return true;
 }
 
 AddressDetails MasterController::getBestRelay(const AddressDetails &destination) {
+    cerr << "Getting Best Relay" << endl;
     if (!this->isConnected()) {
         return mRelayInformation;
     }
@@ -80,6 +84,8 @@ AddressDetails MasterController::getBestRelay(const AddressDetails &destination)
     if (!mSock->send(Master::Version + Master::Request::FindRelay + msg)) {
         return mRelayInformation;
     }
+
+    cerr << "Sent request information" << endl;
 
     bytes response;
     if (!mSock->receive(response, 2)) {
