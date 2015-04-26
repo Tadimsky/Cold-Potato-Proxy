@@ -20,15 +20,20 @@ private:
     bool sendJoinRequest();
 
 
-
+    MasterController();
 public:
-    MasterController(const AddressDetails& relayInformation);
+    // needs to be private
 
-    bool connect(const AddressDetails& master);
+    static std::shared_ptr<MasterController> mInstance;
+
+    bool connect(AddressDetails relayInformation, AddressDetails master);
 
     AddressDetails getBestRelay(const AddressDetails& destination);
 
     bool updateConnection(const AddressDetails& destination, int latency);
+
+    static std::shared_ptr<MasterController> getInstance();
+
 };
 
 

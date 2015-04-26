@@ -12,6 +12,7 @@
 #include "proxy/ProxyServer.h"
 #include "ConnectionData.h"
 #include "Util.h"
+#include "MasterController.h"
 
 using namespace std;
 
@@ -29,6 +30,33 @@ struct Config
 	std::string masterAddress;
 	int masterPort;
 };
+
+void initMasterController(Config& config) {
+
+	if (config.masterAddress.empty()) {
+		return;
+	}
+
+	auto master = MasterController::getInstance();
+
+	AddressDetails masterInfo;
+	masterInfo.addressType = IPV4_ADDRESS;
+	masterInfo.address = config.masterAddress;
+	masterInfo.port = config.masterPort;
+
+	string address = Socket::getLocalIPAddress();
+	if (address.empty()) {
+		cerr << "Could not get Local IP Address: " << address << endl;
+		exit(1);
+	}
+
+	AddressDetails relayInfo;
+	relayInfo.addressType = IPV4_ADDRESS;
+	relayInfo.address = address;
+	relayInfo.port = config.relayPort;
+
+	master->connect(relayInfo, masterInfo);
+}
 
 // Print an error message, usage, and then exit.
 void Usage(string errorMessage)
@@ -166,7 +194,7 @@ int main(int argc, char* argv[])
 	ss << t;
 	string pp = ss.str();
 
-	cout << Socket::getLocalIPAddress() << endl;
+	cout << "Local IP Address: " << Socket::getLocalIPAddress() << endl;
 
 	thread p([&] {
 		ProxyServer proxy = ProxyServer(cfg.proxyPort);
@@ -177,6 +205,8 @@ int main(int argc, char* argv[])
 		RelayServer relay = RelayServer(cfg.relayPort);
 		relay.Listen();
 	});
+
+	initMasterController(cfg);
 
 	p.join();
 	r.join();

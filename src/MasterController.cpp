@@ -5,7 +5,10 @@
 #include "MasterController.h"
 #include "Constants.h"
 
-bool MasterController::connect(const AddressDetails &master) {
+std::shared_ptr<MasterController> MasterController::mInstance;
+
+bool MasterController::connect(AddressDetails relay, AddressDetails master) {
+    mRelayInformation = relay;
     mMasterInformation = master;
 
     if (!mSock->connect(mMasterInformation)) {
@@ -21,8 +24,7 @@ bool MasterController::connect(const AddressDetails &master) {
     return true;
 }
 
-MasterController::MasterController(const AddressDetails &relayInformation) {
-    mRelayInformation = relayInformation;
+MasterController::MasterController() {
 }
 
 bool MasterController::sendJoinRequest() {
@@ -47,5 +49,16 @@ bool MasterController::sendJoinRequest() {
 }
 
 AddressDetails MasterController::getBestRelay(const AddressDetails &destination) {
+}
 
+std::shared_ptr<MasterController> MasterController::getInstance() {
+    if (!MasterController::mInstance) {
+        MasterController* m = new MasterController();
+        MasterController::mInstance = std::make_shared<MasterController>(*m);
+    }
+    return MasterController::mInstance;
+}
+
+bool MasterController::updateConnection(const AddressDetails &destination, int latency) {
+    return false;
 }
