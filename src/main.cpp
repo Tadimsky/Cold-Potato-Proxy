@@ -42,7 +42,7 @@ void initMasterController(Config& config) {
 	AddressDetails masterInfo;
 	masterInfo.addressType = IPV4_ADDRESS;
 	masterInfo.address = config.masterAddress;
-	masterInfo.port = config.masterPort;
+	masterInfo.port = (uint16_t)config.masterPort;
 
 	string address = Socket::getLocalIPAddress();
 	if (address.empty()) {
@@ -53,7 +53,7 @@ void initMasterController(Config& config) {
 	AddressDetails relayInfo;
 	relayInfo.addressType = IPV4_ADDRESS;
 	relayInfo.address = address;
-	relayInfo.port = config.relayPort;
+	relayInfo.port = (uint16_t)config.relayPort;
 
 	master->connect(relayInfo, masterInfo);
 }
@@ -215,7 +215,6 @@ int main(int argc, char* argv[])
 		RelayServer relay = RelayServer(cfg.relayPort);
 		relay.Listen();
 	});
-
 	initMasterController(cfg);
 
 	p.join();
