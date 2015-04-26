@@ -6,6 +6,8 @@
 #include <netdb.h>
 #include <sstream>
 #include <iostream>
+#include <ifaddrs.h>
+#include <string.h>
 #include "Util.h"
 
 Socket::Socket()
@@ -136,7 +138,7 @@ bool Socket::send(const bytes& d)
 	return s != -1;
 }
 
-bool Socket::receive(bytes& d, int size)
+bool Socket::receive(bytes& d, ssize_t size)
 {
 	int flags = size > 0 ? MSG_WAITALL : 0;
 
@@ -151,7 +153,7 @@ bool Socket::receive(bytes& d, int size)
 		errno = EBADF;
 		return false;
 	}
-	int s = ::recv(fd, buffer, size, flags);
+	ssize_t s = ::recv(fd, buffer, size, flags);
 	if (s == -1)
 		return false;
 	d.append(buffer, s);
@@ -213,6 +215,53 @@ bool Socket::connect(const AddressDetails &a) {
 
 			break;
 	}
+	if (!connected) {
+		fd = -1;
+	}
 
 	return connected;
+}
+
+std::string Socket::getLocalIPAddress(std::string& ipString, std::string& ipData) {
+	struct ifaddrs * ifAddrStruct = NULL;
+	struct ifaddrs * ifa = NULL;
+	void * tmpAddrPtr = NULL;
+
+	getifaddrs(&ifAddrStruct);
+
+	char* addressBuffer = nullptr;
+
+	for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+		if (!ifa->ifa_addr) {
+			continue;
+		}
+		if (ifa->ifa_addr->sa_family == AF_INET) { // check it is IP4
+			// is a valid IP4 Address
+			tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+			addressBuffer = (char*)malloc(INET_ADDRSTRLEN * sizeof(char));
+			inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+			// need to get non loopback adapter
+			if (strcmp(ifa->ifa_name, "lo") != 0) {
+				ipString = addressBuffer;
+
+				char data[INET_ADDRSTRLEN];
+				memcpy(data, tmpAddrPtr, INET_ADDRSTRLEN);
+				ipData = data;
+				break;
+			}
+		} else if (ifa->ifa_addr->sa_family == AF_INET6) { // check it is IP6
+			// is a valid IP6 Address
+			tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+			addressBuffer = (char*)malloc(INET6_ADDRSTRLEN * sizeof(char));
+			inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
+		}
+	}
+	if (ifAddrStruct!=NULL) {
+		freeifaddrs(ifAddrStruct);
+	}
+	return std::string(addressBuffer);
+}
+
+bool Socket::isConnected() {
+	return this->fd != -1;
 }

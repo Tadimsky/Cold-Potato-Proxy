@@ -72,8 +72,7 @@ bool Connection::readAddressInformation(AddressDetails &rq) {
     rq.address = address;
     rq.addressType = addressType;
     rq.port = port;
-	
-	return true;
+    return true;
 }
 
 void Connection::relayTraffic(std::shared_ptr<Socket> outSock) {

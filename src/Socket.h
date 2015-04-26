@@ -28,6 +28,8 @@ public:
 	// Create a new TCP socket.
 	Socket();
 
+	static std::string getLocalIPAddress(std::string& ipString, std::string& ipData);
+
 	// Construct this from a socket returned by accept().
 	explicit Socket(int sock);
 	virtual ~Socket();
@@ -37,6 +39,8 @@ public:
 	virtual bool connect6(const bytes& ip, uint16_t port);
 	virtual bool connect(const std::string& domain, uint16_t port);
 
+	bool isConnected();
+
 	virtual bool connect(const AddressDetails& a);
 
 	// Send some data. Sets errno on failure and returns false.
@@ -44,7 +48,7 @@ public:
 	// Receive some data. Sets errno on failure and returns false.
 	// If size is 0, it waits for at least 1 byte, and then returns all available data up to 4096 bytes.
 	// If size is non-zero, it waits for /size/ bytes (up to 4096).
-	virtual bool receive(bytes& d, int size = 0);
+	virtual bool receive(bytes& d, ssize_t size = 0);
 
 	// Get the file descriptor (for polling, etc).
 	int descriptor();
