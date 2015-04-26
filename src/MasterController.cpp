@@ -116,6 +116,7 @@ AddressDetails MasterController::getBestRelay(const AddressDetails &destination)
         return mRelayInformation;
     }
     socketMutex.unlock();
+    cerr << "Got best relay from server" << endl;
     return value;
 }
 
@@ -152,7 +153,7 @@ bool MasterController::notifyConnection(const AddressDetails &destination) {
     std::string dst(destStream.str());
 
     using namespace Constants::Messages;
-    bytes msg = Master::Version + Master::Request::ConnectServer + relay + dst + Util::hexToString("00");
+    bytes msg = Master::Version + Master::Request::ConnectServer + relay + dst + Util::hexToString("0000");
     cerr << msg << endl;
     if (!mSock->send(msg)) {
         cerr << "Could not send message to master server." << endl;
