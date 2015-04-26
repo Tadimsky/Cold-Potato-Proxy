@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <master/MasterServer.h>
 #include "relay/RelayServer.h"
 #include "proxy/ProxyServer.h"
 #include "ConnectionData.h"
@@ -232,8 +233,8 @@ int main(int argc, char* argv[])
 		r.join();
 	} else {
 		thread r([&] {
-			//RelayServer relay = RelayServer(1090);
-			//relay.Listen();
+			MasterServer master(1337);
+			master.Listen();
 		});
 	}
 
