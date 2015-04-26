@@ -87,6 +87,15 @@ namespace Constants {
 				};
 			}
 		};
+
+		namespace Master {
+			const std::string Version = Util::hexToString("01");
+			namespace Request {
+				const std::string Join = Util::hexToString("01");
+				const std::string ConnectServer = Util::hexToString("02");
+				const std::string FindRelay  = Util::hexToString("03");
+			}
+		}
 	};
 };
 

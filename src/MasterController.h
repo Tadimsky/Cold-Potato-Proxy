@@ -6,7 +6,7 @@
 #define COLD_POTATO_PROXY_MASTERCONTROLLER_H
 
 
-#include <bits/shared_ptr.h>
+#include <memory>
 #include "Socket.h"
 #include "Util.h"
 
@@ -26,7 +26,7 @@ public:
 
     bool connect(const AddressDetails& master);
 
-    bool getBestRelay(const AddressDetails& destination);
+    AddressDetails getBestRelay(const AddressDetails& destination);
 
     bool updateConnection(const AddressDetails& destination, int latency);
 };

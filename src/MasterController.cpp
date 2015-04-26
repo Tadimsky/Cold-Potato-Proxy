@@ -3,6 +3,7 @@
 //
 
 #include "MasterController.h"
+#include "Constants.h"
 
 bool MasterController::connect(const AddressDetails &master) {
     mMasterInformation = master;
@@ -26,7 +27,11 @@ MasterController::MasterController(const AddressDetails &relayInformation) {
 
 bool MasterController::sendJoinRequest() {
     // send the master controller the welcome message
-    if (!mSock->send("")) {
+
+    // need to get my information
+
+    using namespace Constants::Messages;
+    if (!mSock->send(Master::Version + Master::Request::Join /* + address information */)) {
         return false;
     }
 
@@ -39,4 +44,8 @@ bool MasterController::sendJoinRequest() {
     // based on standard
 
     return true;
+}
+
+AddressDetails MasterController::getBestRelay(const AddressDetails &destination) {
+
 }
