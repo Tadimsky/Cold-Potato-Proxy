@@ -107,3 +107,33 @@ bool MasterController::updateConnection(const AddressDetails &destination, int l
 bool MasterController::isConnected() {
     return mSock->isConnected();
 }
+
+bool MasterController::notifyConnection(const AddressDetails &destination) {
+
+    std::stringstream s;
+    s << mRelayInformation;
+    std::string relay(s.str());
+
+    s.clear();
+    s << destination;
+    std::string dst(s.str());
+
+    using namespace Constants::Messages;
+    if (!mSock->send(Master::Version + Master::Request::ConnectServer + relay + dst + Util::hexToString("00"))) {
+        return false;
+    }
+
+    bytes response;
+    if (!mSock->receive(response, 2)) {
+        return false;
+    }
+    if (response[0] != 0x01) {
+        return false;
+    }
+
+    if (response[1] != 0x0F) {
+        cerr << "Did not record connection on master" << endl;
+        return false;
+    }
+    return true;
+}

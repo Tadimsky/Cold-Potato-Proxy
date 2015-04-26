@@ -19,7 +19,6 @@ private:
 
     bool sendJoinRequest();
 
-
     MasterController();
 public:
     // needs to be private
@@ -31,6 +30,8 @@ public:
     AddressDetails getBestRelay(const AddressDetails& destination);
 
     bool updateConnection(const AddressDetails& destination, int latency);
+
+    bool notifyConnection(const AddressDetails& destination);
 
     static std::shared_ptr<MasterController> getInstance();
 
