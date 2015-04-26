@@ -48,11 +48,12 @@ void MasterConnection::nodeJoin(){
 		return;
 	}
 	
-
+	map_lock->lock();
 	if(node_map->count(node)<=0){
 		std::vector<Link*> nodeLink;
 		(*node_map)[node] = nodeLink;
 	}
+	map_lock->unlock();
 	
 	char temp;
 	temp = Constants::Server::Version::V1;
@@ -118,40 +119,43 @@ void MasterConnection::nodeConnect(){
 	mSock->send(response);
 }
 
-void MasterConnection::nodeUpdate(){
-//	
-//	std::string response;
-//	response.clear();
-//	
-//	vector<string> tokenList = Util::split(request, '|');
-//	if(tokenList.size()<3){
-//		cerr<<"Join with insufficient parameters!\n";
-//	}
-//	
-//	Node node =  Node::Node(tokenList[1], tokenList[2]);
-//	int loops = (int)tokenList.size()/3;
-//	if(loops<=0){
-//		nodes.push_back(node);
-//		return;
-//	}
-//	
-//	for(int i=1; i<loops; i++){
-//		Node server = Node::Node(tokenList[i*3], tokenList[i*3+1]);
-//		int latency = std::stoi( tokenList[i*3+2]);
-//		Link link = Link::Link(node, server, latency, true);
-//		if(link_map.count(link.getLinkID())<=0){
-//			std::priority_queue<Link, std::vector<Link>, LinkComparator> links;
-//			links.push(link);
-//			link_map[link.getLinkID()] = links;
-//			nodes.push_back(node);
-//		} else {
-//			link_map[link.getLinkID()].push(link);
-//		}
-//	}
-//	
-//	
-//	response.append(std::to_string(Constants::PMessages::OK));
-//	sock->send(response);
+void MasterConnection::nodeFind(){
+	AddressDetails server, node;
+	bytes latencyStr, response;
+	bool error = false;
+	
+	if (!readAddressInformation(server)) {
+		cerr << "Could not read address information" << endl;
+		sendError();
+		return;
+	}
+	
+	
+	map_lock->lock();
+	if(link_map->count(server)>0){
+		node = (*link_map)[server].top()->getNode();
+	} else {
+		error = true; //faster, prevent clogs
+	}
+	map_lock->unlock();
+	
+	if(error){
+		sendError();
+	}
+	
+	char temp;
+	temp = Constants::Server::Version::V1;
+	response.clear();
+	response +=(temp);
+	temp = Constants::Server::Response::Result;
+	response +=(temp);
+	
+	stringstream address;
+	address << server;
+	response.append(address.str());
+	
+	mSock->send(response);
+
 }
 
 bool MasterConnection::handleRequest(AddressDetails & request) {
@@ -178,10 +182,10 @@ bool MasterConnection::handleRequest(AddressDetails & request) {
 		case Constants::Server::Command::Connect:
 			nodeConnect();
 			break;
-//		case Constants::Server::Command::Delete:
-//			nodeUpdate();
-//			break;
-//			
+		case Constants::Server::Command::Find:
+			nodeFind();
+			break;
+			
 		default:
 			cerr <<	"Invalid node request\n!";
 			break;

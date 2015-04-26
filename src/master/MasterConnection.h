@@ -33,7 +33,8 @@ private:
 	bool handleRequest(AddressDetails & request);
 	void nodeJoin();
 	void nodeConnect();
-	void nodeUpdate();
+	void nodeFind();
+	void nodeDelete();
 	void sendError();
 	
 public:
