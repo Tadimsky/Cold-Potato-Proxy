@@ -31,7 +31,7 @@ void MasterConnection::handleConnection() {
 
 bool MasterConnection::verifyVersion(char version) {
 	if (version != Constants::Relay::Version::V1) {
-		cerr << "Invalid relay version." << endl;
+		cerr << "Invalid master version provided." << endl;
 		return false;
 	}
 	return true;
