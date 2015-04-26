@@ -28,7 +28,7 @@ public:
 	// Create a new TCP socket.
 	Socket();
 
-	static std::string getLocalIPAddress();
+	static std::string getLocalIPAddress(std::string& ipString, std::string& ipData);
 
 	// Construct this from a socket returned by accept().
 	explicit Socket(int sock);

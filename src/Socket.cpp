@@ -219,7 +219,7 @@ bool Socket::connect(const AddressDetails &a) {
 	return connected;
 }
 
-std::string Socket::getLocalIPAddress() {
+std::string Socket::getLocalIPAddress(std::string& ipString, std::string& ipData) {
 	struct ifaddrs * ifAddrStruct = NULL;
 	struct ifaddrs * ifa = NULL;
 	void * tmpAddrPtr = NULL;
@@ -239,6 +239,11 @@ std::string Socket::getLocalIPAddress() {
 			inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
 			// need to get non loopback adapter
 			if (strcmp(ifa->ifa_name, "lo") != 0) {
+				ipString = addressBuffer;
+
+				char data[INET_ADDRSTRLEN];
+				memcpy(data, tmpAddrPtr, INET_ADDRSTRLEN);
+				ipData = data;
 				break;
 			}
 		} else if (ifa->ifa_addr->sa_family == AF_INET6) { // check it is IP6

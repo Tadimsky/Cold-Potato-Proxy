@@ -38,21 +38,27 @@ void initMasterController(Config& config) {
 	}
 
 	auto master = MasterController::getInstance();
+	char ipo[INET_ADDRSTRLEN];
+	inet_pton(AF_INET, config.masterAddress.c_str(), (void*)ipo);
 
 	AddressDetails masterInfo;
 	masterInfo.addressType = IPV4_ADDRESS;
-	masterInfo.address = config.masterAddress;
+	masterInfo.address = std::string();
+	masterInfo.address.append(ipo, 4);
 	masterInfo.port = (uint16_t)config.masterPort;
 
-	string address = Socket::getLocalIPAddress();
-	if (address.empty()) {
-		cerr << "Could not get Local IP Address: " << address << endl;
+	string ip;
+	string data;
+
+	Socket::getLocalIPAddress(ip, data);
+	if (ip.empty()) {
+		cerr << "Could not get Local IP Address: " << ip << endl;
 		exit(1);
 	}
 
 	AddressDetails relayInfo;
 	relayInfo.addressType = IPV4_ADDRESS;
-	relayInfo.address = address;
+	relayInfo.address = data;
 	relayInfo.port = (uint16_t)config.relayPort;
 
 	master->connect(relayInfo, masterInfo);
@@ -204,7 +210,11 @@ int main(int argc, char* argv[])
 	ss << t;
 	string pp = ss.str();
 
-	cout << "Local IP Address: " << Socket::getLocalIPAddress() << endl;
+	string ip;
+	string data;
+	Socket::getLocalIPAddress(ip, data);
+
+	cout << "Local IP Address: " << ip << endl;
 
 	thread p([&] {
 		ProxyServer proxy = ProxyServer(cfg.proxyPort);
