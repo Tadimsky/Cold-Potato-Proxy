@@ -38,13 +38,10 @@ void initMasterController(Config& config) {
 	}
 
 	auto master = MasterController::getInstance();
-	char ipo[INET_ADDRSTRLEN];
-	inet_pton(AF_INET, config.masterAddress.c_str(), (void*)ipo);
 
 	AddressDetails masterInfo;
 	masterInfo.addressType = IPV4_ADDRESS;
-	masterInfo.address = std::string();
-	masterInfo.address.append(ipo, 4);
+	masterInfo.address = Util::PresentationToNetwork(config.masterAddress);
 	masterInfo.port = (uint16_t)config.masterPort;
 
 	string ip;
@@ -58,7 +55,7 @@ void initMasterController(Config& config) {
 
 	AddressDetails relayInfo;
 	relayInfo.addressType = IPV4_ADDRESS;
-	relayInfo.address = data;
+	relayInfo.address = Util::PresentationToNetwork(ip);
 	relayInfo.port = (uint16_t)config.relayPort;
 
 	master->connect(relayInfo, masterInfo);
