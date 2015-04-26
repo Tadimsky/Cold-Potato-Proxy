@@ -38,9 +38,7 @@ MasterController::MasterController() {
 }
 
 bool MasterController::sendJoinRequest() {
-    socketMutex.lock();
     if (!this->isConnected()) {
-        socketMutex.unlock();
         return false;
     }
     // send the master controller the welcome message
@@ -55,14 +53,12 @@ bool MasterController::sendJoinRequest() {
     string f = Master::Version + Master::Request::Join + msg;
     cerr << Util::stringToHex(f);
     if (!mSock->send(f)) {
-        socketMutex.unlock();
         return false;
     }
 
     bytes response;
     if (!mSock->receive(response, 2)) {
         cerr << "Did not receive master reply." << endl;
-        socketMutex.unlock();
         return false;
     }
     if (response[0] != Constants::Server::Version::V1) {
@@ -73,10 +69,8 @@ bool MasterController::sendJoinRequest() {
 
     if (response[1] != Constants::Server::Response::Recorded) {
         cerr << "Did not record update on master" << endl;
-        socketMutex.unlock();
         return false;
     }
-    socketMutex.unlock();
     return true;
 }
 
@@ -147,17 +141,20 @@ bool MasterController::notifyConnection(const AddressDetails &destination) {
         socketMutex.unlock();
         return false;
     }
-    std::stringstream s;
-    s << mRelayInformation;
-    std::string relay(s.str());
+    std::stringstream relayStream;
+    relayStream << mRelayInformation;
+    std::string relay(relayStream.str());
 
+    std::stringstream destStream;
     AddressDetails dest(destination);
-    s.clear();
-    s << dest;
-    std::string dst(s.str());
+    destStream.clear();
+    destStream << dest;
+    std::string dst(destStream.str());
 
     using namespace Constants::Messages;
-    if (!mSock->send(Master::Version + Master::Request::ConnectServer + relay + dst + Util::hexToString("00"))) {
+    bytes msg = Master::Version + Master::Request::ConnectServer + relay + dst + Util::hexToString("00");
+    cerr << msg << endl;
+    if (!mSock->send(msg)) {
         cerr << "Could not send message to master server." << endl;
         socketMutex.unlock();
         return false;
